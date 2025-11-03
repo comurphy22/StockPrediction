@@ -1,0 +1,447 @@
+======================================================================
+MODEL COMPARISON: Random Forest vs XGBoost vs Logistic Regression
+======================================================================
+
+Objective: Find best model for MVP stock prediction
+Feature set: Top 25 features (from feature selection)
+Test stocks: BABA, QCOM, NVDA (2019 data)
+======================================================================
+
+[1/7] Loading top 25 feature list...
+      ✅ Top 25 features loaded: ['avg_sentiment_compound', 'HL_spread', 'Price_change', 'SMA_50', 'Volume_change']...
+
+Test Configuration:
+  Tickers: ['BABA', 'QCOM', 'NVDA']
+  Period: 2019-01-01 to 2019-12-31
+  Features: 25 (optimal from selection experiments)
+======================================================================
+
+======================================================================
+BABA - Model Comparison
+======================================================================
+[2/7] Fetching data...
+Successfully fetched 251 days of data for BABA
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 5683 news items for BABA
+📅 After date filter: 444 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 444 unique news items
+📊 Date range: 2019-01-02 14:47:00 to 2019-12-30 12:04:00
+💭 Average sentiment: 0.090
+Fetching politician trading data for BABA...
+Successfully fetched 238 politician trades for BABA
+Date range: 2014-10-16 to 2025-10-05
+
+Transaction type breakdown:
+transaction_type
+purchase          126
+sale               98
+sale (full)        13
+sale (partial)      1
+Name: count, dtype: int64
+      ✅ Stock: 251 days
+[3/7] Creating features...
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    141
+0    109
+Name: count, dtype: int64
+Class balance: 56.40% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         61
+dtype: int64
+Dropped 97 rows with missing values
+Missing values after handling: 0
+      ✅ Features: 25/25, Samples: 153
+      ✅ Train: 122, Test: 31
+
+[4/7] Training Random Forest...
+
+=== Training RANDOM_FOREST Model ===
+Training data shape: X=(122, 25), y=(122,)
+Training target distribution:
+Target
+1    70
+0    52
+Name: count, dtype: int64
+
+Training model...
+Model training complete!
+
+Top 10 Most Important Features:
+        feature  importance
+         SMA_50    0.119454
+      HL_spread    0.064860
+SMA_10_20_cross    0.061253
+            RSI    0.056268
+   Price_change    0.053008
+  Volume_change    0.052035
+      MACD_diff    0.050385
+         SMA_20    0.049431
+    MACD_signal    0.046145
+           MACD    0.041671
+      ✅ Train Acc: 0.9836, Test Acc: 0.7419
+[5/7] Training XGBoost...
+      ✅ Train Acc: 1.0000, Test Acc: 0.8387
+[6/7] Training Logistic Regression...
+      ✅ Train Acc: 0.6721, Test Acc: 0.5806
+
+[7/7] Results for BABA:
+      ────────────────────────────────────────────────────────────
+      Model                Train Acc    Test Acc     Gap       
+      ────────────────────────────────────────────────────────────
+      Random Forest        0.9836       0.7419       +0.2417
+      XGBoost              1.0000       0.8387       +0.1613
+      Logistic Regression  0.6721       0.5806       +0.0915
+      ────────────────────────────────────────────────────────────
+      🏆 Winner: XGBoost (0.8387)
+
+======================================================================
+QCOM - Model Comparison
+======================================================================
+[2/7] Fetching data...
+Successfully fetched 251 days of data for QCOM
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 5863 news items for QCOM
+📅 After date filter: 430 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 430 unique news items
+📊 Date range: 2019-01-02 21:44:00 to 2019-12-22 17:25:00
+💭 Average sentiment: 0.093
+Fetching politician trading data for QCOM...
+Successfully fetched 283 politician trades for QCOM
+Date range: 2014-01-16 to 2025-10-10
+
+Transaction type breakdown:
+transaction_type
+purchase          128
+sale              116
+sale (full)        24
+sale (partial)     15
+Name: count, dtype: int64
+      ✅ Stock: 251 days
+[3/7] Creating features...
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    135
+0    115
+Name: count, dtype: int64
+Class balance: 54.00% positive (price increase)
+
+Missing values before handling:
+SMA_10               9
+SMA_20              19
+SMA_50              49
+RSI                 13
+MACD                25
+MACD_signal         33
+MACD_diff           33
+Price_change         1
+Volume_change        1
+SMA_10_20_cross     19
+SMA_20_50_cross     49
+news_count         100
+dtype: int64
+Dropped 130 rows with missing values
+Missing values after handling: 0
+      ✅ Features: 25/25, Samples: 120
+      ✅ Train: 96, Test: 24
+
+[4/7] Training Random Forest...
+
+=== Training RANDOM_FOREST Model ===
+Training data shape: X=(96, 25), y=(96,)
+Training target distribution:
+Target
+1    57
+0    39
+Name: count, dtype: int64
+
+Training model...
+Model training complete!
+
+Top 10 Most Important Features:
+               feature  importance
+         Volume_change    0.080711
+             HL_spread    0.059657
+       SMA_10_20_cross    0.056900
+                   RSI    0.055310
+avg_sentiment_compound    0.052751
+ days_since_last_trade    0.050107
+                SMA_10    0.048540
+avg_sentiment_positive    0.048530
+       SMA_20_50_cross    0.047297
+                SMA_50    0.044191
+      ✅ Train Acc: 1.0000, Test Acc: 0.5833
+[5/7] Training XGBoost...
+      ✅ Train Acc: 1.0000, Test Acc: 0.6667
+[6/7] Training Logistic Regression...
+      ✅ Train Acc: 0.6250, Test Acc: 0.6250
+
+[7/7] Results for QCOM:
+      ────────────────────────────────────────────────────────────
+      Model                Train Acc    Test Acc     Gap       
+      ────────────────────────────────────────────────────────────
+      Random Forest        1.0000       0.5833       +0.4167
+      XGBoost              1.0000       0.6667       +0.3333
+      Logistic Regression  0.6250       0.6250       +0.0000
+      ────────────────────────────────────────────────────────────
+      🏆 Winner: XGBoost (0.6667)
+
+======================================================================
+NVDA - Model Comparison
+======================================================================
+[2/7] Fetching data...
+Successfully fetched 251 days of data for NVDA
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 6279 news items for NVDA
+📅 After date filter: 505 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 505 unique news items
+📊 Date range: 2019-01-02 09:05:00 to 2019-12-30 20:20:00
+💭 Average sentiment: 0.072
+Fetching politician trading data for NVDA...
+Successfully fetched 580 politician trades for NVDA
+Date range: 2016-01-20 to 2025-10-10
+
+Transaction type breakdown:
+transaction_type
+purchase          325
+sale              227
+sale (full)        16
+sale (partial)      9
+exchange            3
+Name: count, dtype: int64
+      ✅ Stock: 251 days
+[3/7] Creating features...
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    136
+0    114
+Name: count, dtype: int64
+Class balance: 54.40% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         74
+dtype: int64
+Dropped 105 rows with missing values
+Missing values after handling: 0
+      ✅ Features: 25/25, Samples: 145
+      ✅ Train: 116, Test: 29
+
+[4/7] Training Random Forest...
+
+=== Training RANDOM_FOREST Model ===
+Training data shape: X=(116, 25), y=(116,)
+Training target distribution:
+Target
+0    61
+1    55
+Name: count, dtype: int64
+
+Training model...
+Model training complete!
+
+Top 10 Most Important Features:
+               feature  importance
+          Price_change    0.088521
+             HL_spread    0.072843
+       SMA_10_20_cross    0.070061
+             MACD_diff    0.068299
+                  MACD    0.059720
+avg_sentiment_compound    0.055704
+                SMA_50    0.055265
+avg_sentiment_positive    0.053999
+                SMA_20    0.053051
+                   RSI    0.052856
+      ✅ Train Acc: 1.0000, Test Acc: 0.6897
+[5/7] Training XGBoost...
+      ✅ Train Acc: 1.0000, Test Acc: 0.5172
+[6/7] Training Logistic Regression...
+      ✅ Train Acc: 0.6207, Test Acc: 0.6207
+
+[7/7] Results for NVDA:
+      ────────────────────────────────────────────────────────────
+      Model                Train Acc    Test Acc     Gap       
+      ────────────────────────────────────────────────────────────
+      Random Forest        1.0000       0.6897       +0.3103
+      XGBoost              1.0000       0.5172       +0.4828
+      Logistic Regression  0.6207       0.6207       +0.0000
+      ────────────────────────────────────────────────────────────
+      🏆 Winner: Random Forest (0.6897)
+
+
+======================================================================
+AGGREGATE MODEL COMPARISON
+======================================================================
+
+📊 AVERAGE PERFORMANCE ACROSS ALL STOCKS
+──────────────────────────────────────────────────────────────────────
+Model                     Avg Train    Avg Test     Avg Gap     
+──────────────────────────────────────────────────────────────────────
+Random Forest             0.9945       0.6716       +0.3229
+XGBoost                   1.0000       0.6742       +0.3258
+Logistic Regression       0.6393       0.6088       +0.0305
+──────────────────────────────────────────────────────────────────────
+
+🏆 BEST MODEL: XGBoost
+   Average Test Accuracy: 0.6742
+   vs Random Forest: +0.26%
+   vs Logistic Regression: +6.54%
+
+──────────────────────────────────────────────────────────────────────
+
+📈 WINNER BREAKDOWN BY STOCK
+──────────────────────────────────────────────────────────────────────
+  XGBoost: 2/3 stocks
+  Random Forest: 1/3 stocks
+──────────────────────────────────────────────────────────────────────
+
+📋 DETAILED RESULTS BY STOCK
+──────────────────────────────────────────────────────────────────────
+Stock    Model                     Test Acc     F1 Score    
+──────────────────────────────────────────────────────────────────────
+BABA     Random Forest           0.7419       0.8095
+         XGBoost                 0.8387       0.8780
+         Logistic Regression     0.5806       0.7347
+         Winner: XGBoost
+
+QCOM     Random Forest           0.5833       0.7059
+         XGBoost                 0.6667       0.7333
+         Logistic Regression     0.6250       0.6400
+         Winner: XGBoost
+
+NVDA     Random Forest           0.6897       0.6087
+         XGBoost                 0.5172       0.5000
+         Logistic Regression     0.6207       0.6207
+         Winner: Random Forest
+
+──────────────────────────────────────────────────────────────────────
+
+✅ Results saved to: model_comparison_results.csv
+
+======================================================================
+RECOMMENDATION FOR MVP
+======================================================================
+
+  Selected Model: XGBoost
+  Expected Accuracy: 67.42%
+  Features: 25 (optimal set)
+  Overfitting: Moderate (gap: +0.33)
+
+  ✅ EXCEEDS MVP TARGET (60%)
+
+======================================================================
+NEXT STEPS
+======================================================================
+1. Use {best_model} for MVP deployment
+2. Validate on additional stocks (Thursday)
+3. Generate final results and documentation (Friday)
+4. Consider ensemble methods post-MVP
+======================================================================
+
+✅ Model comparison complete!

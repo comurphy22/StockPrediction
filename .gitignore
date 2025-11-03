@@ -126,3 +126,4 @@ models/
 .env
 secrets.json
 config/secrets.yaml
+src/config.py

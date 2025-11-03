@@ -83,6 +83,12 @@ def create_features(df: pd.DataFrame,
             if 'date' in sentiment_df.columns:
                 sentiment_df = sentiment_df.rename(columns={'date': 'Date'})
             sentiment_df['Date'] = pd.to_datetime(sentiment_df['Date'])
+            
+            # Remove timezone info to avoid merge conflicts
+            if hasattr(features_df['Date'].dtype, 'tz') and features_df['Date'].dtype.tz is not None:
+                features_df['Date'] = features_df['Date'].dt.tz_localize(None)
+            if hasattr(sentiment_df['Date'].dtype, 'tz') and sentiment_df['Date'].dtype.tz is not None:
+                sentiment_df['Date'] = sentiment_df['Date'].dt.tz_localize(None)
         else:
             merge_key = 'date'
         
@@ -107,6 +113,10 @@ def create_features(df: pd.DataFrame,
         # Count number of buys and sells per day
         politician_df['date'] = pd.to_datetime(politician_df['date'])
         
+        # Remove timezone info to avoid merge conflicts
+        if hasattr(politician_df['date'].dtype, 'tz') and politician_df['date'].dtype.tz is not None:
+            politician_df['date'] = politician_df['date'].dt.tz_localize(None)
+        
         # Create buy/sell indicators
         politician_agg = politician_df.groupby('date').agg({
             'transaction_type': lambda x: sum(x.str.lower().str.contains('buy', na=False)),
@@ -114,6 +124,11 @@ def create_features(df: pd.DataFrame,
         }).reset_index()
         
         politician_agg.columns = ['Date', 'politician_buy_count', 'politician_trade_amount']
+        
+        # Ensure Date column in features_df is also timezone-naive
+        if 'Date' in features_df.columns:
+            if hasattr(features_df['Date'].dtype, 'tz') and features_df['Date'].dtype.tz is not None:
+                features_df['Date'] = features_df['Date'].dt.tz_localize(None)
         
         # Merge with features
         features_df = features_df.merge(
@@ -125,6 +140,31 @@ def create_features(df: pd.DataFrame,
         # Fill missing values with 0 (no trades)
         features_df['politician_buy_count'] = features_df['politician_buy_count'].fillna(0)
         features_df['politician_trade_amount'] = features_df['politician_trade_amount'].fillna(0)
+        
+        # === ADVANCED POLITICIAN FEATURES ===
+        print("Creating advanced politician features...")
+        try:
+            from advanced_politician_features import create_advanced_politician_features
+            
+            # Create advanced features aligned with our date index
+            # Pass features_df as stock_df (it has the Date column)
+            adv_features = create_advanced_politician_features(
+                features_df[['Date']] if 'Date' in features_df.columns else features_df,
+                politician_df
+            )
+            
+            # Merge advanced features
+            if not adv_features.empty:
+                # Merge on Date
+                if 'Date' in adv_features.columns and 'Date' in features_df.columns:
+                    features_df = features_df.merge(adv_features, on='Date', how='left')
+                else:
+                    features_df = pd.concat([features_df, adv_features], axis=1)
+                print(f"      ✅ Added {len(adv_features.columns)-1 if 'Date' in adv_features.columns else len(adv_features.columns)} advanced politician features")
+            else:
+                print("      ⚠️  No advanced features generated (insufficient data)")
+        except Exception as e:
+            print(f"      ⚠️  Could not create advanced features: {e}")
     else:
         print("No politician trade data provided - skipping politician features")
     
