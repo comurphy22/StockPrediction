@@ -8,6 +8,38 @@ A machine learning project to predict daily stock price movements using technica
 
 > Does incorporating politician-trade signals into a prediction pipeline (alongside technical indicators and news sentiment) improve daily stock direction prediction and yield incremental economic value in a simple backtest?
 
+### 🎉 Latest Results (November 2025)
+
+#### Current Best Model: V1 Baseline
+**Model:** XGBoost with 25 optimal features  
+**Test Scope:** 10 diverse stocks (2019 data)  
+**Average Test Accuracy:** **56.24%** (12% edge over random)  
+**Status:** ✅ **Realistic ceiling reached**
+
+#### Investigation Complete
+After testing sentiment improvements (V3, V4) and regularization approaches (V5), we determined:
+- **56% accuracy is the realistic ceiling** for daily predictions with current features
+- **Overfitting (44% gap)** is fundamental to the problem, not fixable by hyperparameters
+- **Stock-specific variance** is high (40% to 84% accuracy across stocks)
+- **Economic value exists** IF properly risk-managed
+
+| Performance Tier (V1) | Count | Stocks |
+|-----------------|-------|--------|
+| Excellent (>70%) | 1 | BABA (83.87%) |
+| Good (60-70%) | 2 | QCOM (66.67%), AAPL (63.41%) |
+| Moderate (50-60%) | 4 | NFLX, NVDA, MSFT, GOOGL |
+| Poor (<50%) | 3 | AMZN, MU, TSLA |
+
+**Key Findings:**
+- **56% daily accuracy is realistic ceiling** - daily stock movements are inherently noisy
+- **More data doesn't help** - V3 with 3154 articles performed worse than V1 with 0 articles for AAPL
+- **Better sentiment doesn't help much** - V4 with expert-labeled classifier improved <1%
+- **Regularization provides minimal benefit** - V5 with alpha=1.0 improved only +1.4% on average
+- **Stock-specific behavior matters** - BABA (84%), AAPL (63%), MU (42%) show huge variance
+- **Politician trading signals work** - AAPL achieved 63% with NO news data
+
+📄 **[Full Investigation](docs/PROJECT_FINAL_SUMMARY.md)** | 📊 **[Option A Results](docs/OPTION_A_INVESTIGATION_RESULTS.md)** | � **[MVP Analysis](docs/MVP_VALIDATION_SUMMARY.md)**
+
 ## 🎯 Core Features
 
 1. **Technical Indicators**
@@ -30,17 +62,36 @@ A machine learning project to predict daily stock price movements using technica
 
 ```
 StockPrediction/
-├── src/
-│   ├── __init__.py              # Package initialization
-│   ├── data_loader.py           # Data fetching functions
+├── src/                         # Core source code
+│   ├── data_loader.py           # Data fetching (stocks, news, politician trades)
 │   ├── feature_engineering.py   # Feature creation and processing
-│   └── model.py                 # Model training and evaluation
-├── notebooks/
-│   └── 01_baseline_model.ipynb  # Baseline model with technical indicators
-├── data/                        # Data storage (gitignored)
-├── tests/                       # Unit tests
-├── requirements.txt             # Python dependencies
-└── README.md                    # This file
+│   ├── model_xgboost.py         # XGBoost model with regularization
+│   ├── advanced_politician_features.py  # Advanced politician signal features
+│   └── config.py                # Configuration settings
+│
+├── scripts/                     # Analysis and validation scripts
+│   ├── validate_mvp.py          # V1: Baseline validation (10 stocks)
+│   ├── validate_mvp_v5_optimized.py  # V5: Optimized with L1 regularization
+│   ├── fix_overfitting_experiments.py  # Hyperparameter optimization
+│   ├── summarize_overfitting_results.py  # Results analysis
+│   ├── analyze_feature_importance.py  # Feature importance analysis
+│   ├── train_financial_sentiment.py   # Sentiment model training
+│   └── visualize_mvp_results.py       # Results visualization
+│
+├── results/                     # Experiment results (CSV)
+│   ├── mvp_validation_results.csv     # V1 baseline results
+│   ├── overfitting_experiments.csv    # Regularization experiments
+│   └── feature_importance_rankings.csv # Top 25 features
+│
+├── logs/                        # Execution logs
+├── docs/                        # Documentation
+│   ├── MVP_RESULTS.md           # Detailed validation results
+│   └── MVP_VALIDATION_SUMMARY.md # V1-V4 comparison analysis
+│
+├── models/                      # Trained models
+├── visualizations/              # Charts and graphs
+├── archive/                     # Old experiments (V2-V4, etc.)
+└── notebooks/                   # Jupyter notebooks
 ```
 
 ## 🚀 Getting Started

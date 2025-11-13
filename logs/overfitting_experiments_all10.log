@@ -1,0 +1,3768 @@
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:31:55] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:32:03] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:32:12] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:32:20] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:32:28] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+================================================================================
+OVERFITTING FIX EXPERIMENTS
+================================================================================
+Started: 2025-11-04 15:31:46
+
+[1/4] Loading optimal feature set...
+✅ Loaded 25 features
+
+[2/4] Defining hyperparameter grid...
+Parameter ranges:
+  max_depth: [3, 4, 5, 6]
+  min_child_weight: [1, 3, 5]
+  alpha: [0, 0.1, 1.0]
+  gamma: [0, 0.1, 0.5]
+  lambda: [1, 5, 10]
+
+[3/4] Testing 5 configurations on 10 stocks...
+================================================================================
+
+[1/5] Testing: Baseline
+--------------------------------------------------------------------------------
+Successfully fetched 251 days of data for NFLX
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 6037 news items for NFLX
+📅 After date filter: 798 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 798 unique news items
+📊 Date range: 2019-01-01 17:38:00 to 2019-12-30 21:13:00
+💭 Average sentiment: 0.101
+Fetching politician trading data for NFLX...
+Successfully fetched 373 politician trades for NFLX
+Date range: 2014-04-03 to 2025-10-28
+
+Transaction type breakdown:
+transaction_type
+purchase          194
+sale              144
+sale (full)        31
+sale (partial)      3
+exchange            1
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    129
+0    121
+Name: count, dtype: int64
+Class balance: 51.60% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         50
+dtype: int64
+Dropped 86 rows with missing values
+Missing values after handling: 0
+   NFLX: Train=100.0%, Test=57.6%, Gap=42.4%
+Successfully fetched 251 days of data for NVDA
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 6279 news items for NVDA
+📅 After date filter: 505 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 505 unique news items
+📊 Date range: 2019-01-02 09:05:00 to 2019-12-30 20:20:00
+💭 Average sentiment: 0.072
+Fetching politician trading data for NVDA...
+Successfully fetched 581 politician trades for NVDA
+Date range: 2016-01-20 to 2025-11-03
+
+Transaction type breakdown:
+transaction_type
+purchase          325
+sale              227
+sale (full)        16
+sale (partial)     10
+exchange            3
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    136
+0    114
+Name: count, dtype: int64
+Class balance: 54.40% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         74
+dtype: int64
+Dropped 105 rows with missing values
+Missing values after handling: 0
+   NVDA: Train=100.0%, Test=41.4%, Gap=58.6%
+Successfully fetched 251 days of data for BABA
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 5683 news items for BABA
+📅 After date filter: 444 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 444 unique news items
+📊 Date range: 2019-01-02 14:47:00 to 2019-12-30 12:04:00
+💭 Average sentiment: 0.090
+Fetching politician trading data for BABA...
+Successfully fetched 238 politician trades for BABA
+Date range: 2014-10-16 to 2025-10-05
+
+Transaction type breakdown:
+transaction_type
+purchase          126
+sale               98
+sale (full)        13
+sale (partial)      1
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data.../Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:32:37] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:32:46] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    141
+0    109
+Name: count, dtype: int64
+Class balance: 56.40% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         61
+dtype: int64
+Dropped 97 rows with missing values
+Missing values after handling: 0
+   BABA: Train=100.0%, Test=67.7%, Gap=32.3%
+Successfully fetched 251 days of data for QCOM
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 5863 news items for QCOM
+📅 After date filter: 430 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 430 unique news items
+📊 Date range: 2019-01-02 21:44:00 to 2019-12-22 17:25:00
+💭 Average sentiment: 0.093
+Fetching politician trading data for QCOM...
+Successfully fetched 283 politician trades for QCOM
+Date range: 2014-01-16 to 2025-10-10
+
+Transaction type breakdown:
+transaction_type
+purchase          128
+sale              116
+sale (full)        24
+sale (partial)     15
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    135
+0    115
+Name: count, dtype: int64
+Class balance: 54.00% positive (price increase)
+
+Missing values before handling:
+SMA_10               9
+SMA_20              19
+SMA_50              49
+RSI                 13
+MACD                25
+MACD_signal         33
+MACD_diff           33
+Price_change         1
+Volume_change        1
+SMA_10_20_cross     19
+SMA_20_50_cross     49
+news_count         100
+dtype: int64
+Dropped 130 rows with missing values
+Missing values after handling: 0
+   QCOM: Train=100.0%, Test=66.7%, Gap=33.3%
+Successfully fetched 251 days of data for MU
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 6293 news items for MU
+📅 After date filter: 536 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 536 unique news items
+📊 Date range: 2019-01-02 09:08:00 to 2019-12-27 10:10:00
+💭 Average sentiment: 0.079
+Fetching politician trading data for MU...
+Successfully fetched 231 politician trades for MU
+Date range: 2015-01-08 to 2025-10-10
+
+Transaction type breakdown:
+transaction_type
+purchase          128
+sale               94
+sale (partial)      6
+sale (full)         2
+exchange            1
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    128
+0    122
+Name: count, dtype: int64
+Class balance: 51.20% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         63
+dtype: int64
+Dropped 96 rows with missing values
+Missing values after handling: 0
+   MU: Train=100.0%, Test=41.9%, Gap=58.1%
+Successfully fetched 251 days of data for TSLA
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv.../Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:32:54] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:33:03] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:33:12] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+ 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 3805 news items for TSLA
+📅 After date filter: 730 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 730 unique news items
+📊 Date range: 2019-07-01 15:29:00 to 2019-12-30 18:57:00
+💭 Average sentiment: 0.099
+Fetching politician trading data for TSLA...
+Successfully fetched 321 politician trades for TSLA
+Date range: 2014-02-14 to 2025-10-22
+
+Transaction type breakdown:
+transaction_type
+purchase          164
+sale              144
+sale (full)         9
+sale (partial)      4
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    131
+0    119
+Name: count, dtype: int64
+Class balance: 52.40% positive (price increase)
+
+Missing values before handling:
+SMA_10               9
+SMA_20              19
+SMA_50              49
+RSI                 13
+MACD                25
+MACD_signal         33
+MACD_diff           33
+Price_change         1
+Volume_change        1
+SMA_10_20_cross     19
+SMA_20_50_cross     49
+news_count         128
+dtype: int64
+Dropped 128 rows with missing values
+Missing values after handling: 0
+   TSLA: Train=100.0%, Test=52.0%, Gap=48.0%
+Successfully fetched 251 days of data for AAPL
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 942 news items for AAPL
+📅 After date filter: 0 items from 2019-01-01 to 2019-12-31
+⚠️  No news in date range
+Fetching politician trading data for AAPL...
+Successfully fetched 1041 politician trades for AAPL
+Date range: 2014-01-07 to 2025-11-03
+
+Transaction type breakdown:
+transaction_type
+purchase          479
+sale              437
+sale (partial)     82
+sale (full)        42
+exchange            1
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+No sentiment data provided - skipping sentiment features
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 37)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    145
+0    105
+Name: count, dtype: int64
+Class balance: 58.00% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+dtype: int64
+Dropped 49 rows with missing values
+Missing values after handling: 0
+   AAPL: Train=100.0%, Test=53.7%, Gap=46.3%
+Successfully fetched 251 days of data for MSFT
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 0 news items for MSFT
+⚠️  No news found for ticker MSFT
+Fetching politician trading data for MSFT...
+Successfully fetched 1239 politician trades for MSFT
+Date range: 2014-01-07 to 2025-10-28
+
+Transaction type breakdown:
+transaction_type
+purchase          587
+sale              561
+sale (partial)     60
+sale (full)        29
+exchange            2
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+No sentiment data provided - skipping sentiment features
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 37)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    147
+0    103
+Name: count, dtype: int64
+Class balance: 58.80% positive (price increase)/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:33:20] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:33:28] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:33:37] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+dtype: int64
+Dropped 49 rows with missing values
+Missing values after handling: 0
+   MSFT: Train=100.0%, Test=41.5%, Gap=58.5%
+Successfully fetched 251 days of data for GOOGL
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 3339 news items for GOOGL
+📅 After date filter: 762 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 762 unique news items
+📊 Date range: 2019-01-02 21:44:00 to 2019-12-30 17:52:00
+💭 Average sentiment: 0.071
+Fetching politician trading data for GOOGL...
+Successfully fetched 532 politician trades for GOOGL
+Date range: 2014-05-15 to 2025-10-30
+
+Transaction type breakdown:
+transaction_type
+sale              286
+purchase          232
+sale (full)         7
+exchange            4
+sale (partial)      3
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    133
+0    117
+Name: count, dtype: int64
+Class balance: 53.20% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         31
+dtype: int64
+Dropped 72 rows with missing values
+Missing values after handling: 0
+   GOOGL: Train=100.0%, Test=50.0%, Gap=50.0%
+Successfully fetched 251 days of data for AMZN
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 608 news items for AMZN
+📅 After date filter: 0 items from 2019-01-01 to 2019-12-31
+⚠️  No news in date range
+Fetching politician trading data for AMZN...
+Successfully fetched 753 politician trades for AMZN
+Date range: 2014-02-04 to 2025-10-28
+
+Transaction type breakdown:
+transaction_type
+purchase          429
+sale              295
+sale (full)        18
+sale (partial)      9
+exchange            2
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+No sentiment data provided - skipping sentiment features
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 37)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    134
+0    116
+Name: count, dtype: int64
+Class balance: 53.60% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+dtype: int64
+Dropped 49 rows with missing values
+Missing values after handling: 0
+   AMZN: Train=100.0%, Test=51.2%, Gap=48.8%
+   📊 Average: Train=100.0%, Test=52.4%, Gap=47.6%
+
+[2/5] Testing: Alpha=1.0
+--------------------------------------------------------------------------------
+Successfully fetched 251 days of data for NFLX
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 6037 news items for NFLX
+📅 After date filter: 798 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 798 unique news items
+📊 Date range: 2019-01-01 17:38:00 to 2019-12-30 21:13:00
+💭 Average sentiment: 0.101
+Fetching politician trading data for NFLX...
+Successfully fetched 373 politician trades for NFLX
+Date range: 2014-04-03 to 2025-10-28
+
+Transaction type breakdown:
+transaction_type
+purchase          194
+sale              144
+sale (full)        31
+sale (partial)      3
+exchange            1
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:33:46] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:33:54] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    129
+0    121
+Name: count, dtype: int64
+Class balance: 51.60% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         50
+dtype: int64
+Dropped 86 rows with missing values
+Missing values after handling: 0
+   NFLX: Train=100.0%, Test=72.7%, Gap=27.3%
+Successfully fetched 251 days of data for NVDA
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 6279 news items for NVDA
+📅 After date filter: 505 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 505 unique news items
+📊 Date range: 2019-01-02 09:05:00 to 2019-12-30 20:20:00
+💭 Average sentiment: 0.072
+Fetching politician trading data for NVDA...
+Successfully fetched 581 politician trades for NVDA
+Date range: 2016-01-20 to 2025-11-03
+
+Transaction type breakdown:
+transaction_type
+purchase          325
+sale              227
+sale (full)        16
+sale (partial)     10
+exchange            3
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    136
+0    114
+Name: count, dtype: int64
+Class balance: 54.40% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         74
+dtype: int64
+Dropped 105 rows with missing values
+Missing values after handling: 0
+   NVDA: Train=100.0%, Test=55.2%, Gap=44.8%
+Successfully fetched 251 days of data for BABA
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 5683 news items for BABA
+📅 After date filter: 444 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 444 unique news items
+📊 Date range: 2019-01-02 14:47:00 to 2019-12-30 12:04:00
+💭 Average sentiment: 0.090
+Fetching politician trading data for BABA...
+Successfully fetched 238 politician trades for BABA
+Date range: 2014-10-16 to 2025-10-05
+
+Transaction type breakdown:
+transaction_type
+purchase          126
+sale               98
+sale (full)        13
+sale (partial)      1
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    141
+0    109
+Name: count, dtype: int64
+Class balance: 56.40% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         61
+dtype: int64
+Dropped 97 rows with missing values
+Missing values after handling: 0
+   BABA: Train=100.0%, Test=67.7%, Gap=32.3%
+Successfully fetched 251 days of data for QCOM
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:34:03] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:34:11] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:34:19] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+
+🎯 Found 5863 news items for QCOM
+📅 After date filter: 430 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 430 unique news items
+📊 Date range: 2019-01-02 21:44:00 to 2019-12-22 17:25:00
+💭 Average sentiment: 0.093
+Fetching politician trading data for QCOM...
+Successfully fetched 283 politician trades for QCOM
+Date range: 2014-01-16 to 2025-10-10
+
+Transaction type breakdown:
+transaction_type
+purchase          128
+sale              116
+sale (full)        24
+sale (partial)     15
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    135
+0    115
+Name: count, dtype: int64
+Class balance: 54.00% positive (price increase)
+
+Missing values before handling:
+SMA_10               9
+SMA_20              19
+SMA_50              49
+RSI                 13
+MACD                25
+MACD_signal         33
+MACD_diff           33
+Price_change         1
+Volume_change        1
+SMA_10_20_cross     19
+SMA_20_50_cross     49
+news_count         100
+dtype: int64
+Dropped 130 rows with missing values
+Missing values after handling: 0
+   QCOM: Train=100.0%, Test=62.5%, Gap=37.5%
+Successfully fetched 251 days of data for MU
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 6293 news items for MU
+📅 After date filter: 536 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 536 unique news items
+📊 Date range: 2019-01-02 09:08:00 to 2019-12-27 10:10:00
+💭 Average sentiment: 0.079
+Fetching politician trading data for MU...
+Successfully fetched 231 politician trades for MU
+Date range: 2015-01-08 to 2025-10-10
+
+Transaction type breakdown:
+transaction_type
+purchase          128
+sale               94
+sale (partial)      6
+sale (full)         2
+exchange            1
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    128
+0    122
+Name: count, dtype: int64
+Class balance: 51.20% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         63
+dtype: int64
+Dropped 96 rows with missing values
+Missing values after handling: 0
+   MU: Train=100.0%, Test=32.3%, Gap=67.7%
+Successfully fetched 251 days of data for TSLA
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 3805 news items for TSLA
+📅 After date filter: 730 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 730 unique news items
+📊 Date range: 2019-07-01 15:29:00 to 2019-12-30 18:57:00
+💭 Average sentiment: 0.099
+Fetching politician trading data for TSLA...
+Successfully fetched 321 politician trades for TSLA
+Date range: 2014-02-14 to 2025-10-22
+
+Transaction type breakdown:
+transaction_type
+purchase          164
+sale              144
+sale (full)         9
+sale (partial)      4
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    131
+0    119
+Name: count, dtype: int64/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:34:29] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:34:38] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:34:47] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+
+Class balance: 52.40% positive (price increase)
+
+Missing values before handling:
+SMA_10               9
+SMA_20              19
+SMA_50              49
+RSI                 13
+MACD                25
+MACD_signal         33
+MACD_diff           33
+Price_change         1
+Volume_change        1
+SMA_10_20_cross     19
+SMA_20_50_cross     49
+news_count         128
+dtype: int64
+Dropped 128 rows with missing values
+Missing values after handling: 0
+   TSLA: Train=100.0%, Test=48.0%, Gap=52.0%
+Successfully fetched 251 days of data for AAPL
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 942 news items for AAPL
+📅 After date filter: 0 items from 2019-01-01 to 2019-12-31
+⚠️  No news in date range
+Fetching politician trading data for AAPL...
+Successfully fetched 1041 politician trades for AAPL
+Date range: 2014-01-07 to 2025-11-03
+
+Transaction type breakdown:
+transaction_type
+purchase          479
+sale              437
+sale (partial)     82
+sale (full)        42
+exchange            1
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+No sentiment data provided - skipping sentiment features
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 37)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    145
+0    105
+Name: count, dtype: int64
+Class balance: 58.00% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+dtype: int64
+Dropped 49 rows with missing values
+Missing values after handling: 0
+   AAPL: Train=100.0%, Test=56.1%, Gap=43.9%
+Successfully fetched 251 days of data for MSFT
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 0 news items for MSFT
+⚠️  No news found for ticker MSFT
+Fetching politician trading data for MSFT...
+Successfully fetched 1239 politician trades for MSFT
+Date range: 2014-01-07 to 2025-10-28
+
+Transaction type breakdown:
+transaction_type
+purchase          587
+sale              561
+sale (partial)     60
+sale (full)        29
+exchange            2
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+No sentiment data provided - skipping sentiment features
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 37)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    147
+0    103
+Name: count, dtype: int64
+Class balance: 58.80% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+dtype: int64
+Dropped 49 rows with missing values
+Missing values after handling: 0
+   MSFT: Train=100.0%, Test=43.9%, Gap=56.1%
+Successfully fetched 251 days of data for GOOGL
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 3339 news items for GOOGL
+📅 After date filter: 762 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 762 unique news items
+📊 Date range: 2019-01-02 21:44:00 to 2019-12-30 17:52:00
+💭 Average sentiment: 0.071
+Fetching politician trading data for GOOGL...
+Successfully fetched 532 politician trades for GOOGL
+Date range: 2014-05-15 to 2025-10-30
+
+Transaction type breakdown:
+transaction_type
+sale              286
+purchase          232
+sale (full)         7
+exchange            4
+sale (partial)      3
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:35:01] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:35:12] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:35:20] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+
+
+Target distribution:
+Target
+1    133
+0    117
+Name: count, dtype: int64
+Class balance: 53.20% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         31
+dtype: int64
+Dropped 72 rows with missing values
+Missing values after handling: 0
+   GOOGL: Train=100.0%, Test=50.0%, Gap=50.0%
+Successfully fetched 251 days of data for AMZN
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 608 news items for AMZN
+📅 After date filter: 0 items from 2019-01-01 to 2019-12-31
+⚠️  No news in date range
+Fetching politician trading data for AMZN...
+Successfully fetched 753 politician trades for AMZN
+Date range: 2014-02-04 to 2025-10-28
+
+Transaction type breakdown:
+transaction_type
+purchase          429
+sale              295
+sale (full)        18
+sale (partial)      9
+exchange            2
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+No sentiment data provided - skipping sentiment features
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 37)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    134
+0    116
+Name: count, dtype: int64
+Class balance: 53.60% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+dtype: int64
+Dropped 49 rows with missing values
+Missing values after handling: 0
+   AMZN: Train=100.0%, Test=48.8%, Gap=51.2%
+   📊 Average: Train=100.0%, Test=53.7%, Gap=46.3%
+
+[3/5] Testing: Alpha=0.5
+--------------------------------------------------------------------------------
+Successfully fetched 251 days of data for NFLX
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 6037 news items for NFLX
+📅 After date filter: 798 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 798 unique news items
+📊 Date range: 2019-01-01 17:38:00 to 2019-12-30 21:13:00
+💭 Average sentiment: 0.101
+Fetching politician trading data for NFLX...
+Successfully fetched 373 politician trades for NFLX
+Date range: 2014-04-03 to 2025-10-28
+
+Transaction type breakdown:
+transaction_type
+purchase          194
+sale              144
+sale (full)        31
+sale (partial)      3
+exchange            1
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    129
+0    121
+Name: count, dtype: int64
+Class balance: 51.60% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         50
+dtype: int64
+Dropped 86 rows with missing values
+Missing values after handling: 0
+   NFLX: Train=100.0%, Test=54.5%, Gap=45.5%
+Successfully fetched 251 days of data for NVDA
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 6279 news items for NVDA
+📅 After date filter: 505 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 505 unique news items
+📊 Date range: 2019-01-02 09:05:00 to 2019-12-30 20:20:00
+💭 Average sentiment: 0.072
+Fetching politician trading data for NVDA...
+Successfully fetched 581 politician trades for NVDA
+Date range: 2016-01-20 to 2025-11-03
+
+Transaction type breakdown:
+transaction_type
+purchase          325
+sale              227
+sale (full)        16
+sale (partial)     10
+exchange            3
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:35:29] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:35:37] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    136
+0    114
+Name: count, dtype: int64
+Class balance: 54.40% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         74
+dtype: int64
+Dropped 105 rows with missing values
+Missing values after handling: 0
+   NVDA: Train=100.0%, Test=51.7%, Gap=48.3%
+Successfully fetched 251 days of data for BABA
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 5683 news items for BABA
+📅 After date filter: 444 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 444 unique news items
+📊 Date range: 2019-01-02 14:47:00 to 2019-12-30 12:04:00
+💭 Average sentiment: 0.090
+Fetching politician trading data for BABA...
+Successfully fetched 238 politician trades for BABA
+Date range: 2014-10-16 to 2025-10-05
+
+Transaction type breakdown:
+transaction_type
+purchase          126
+sale               98
+sale (full)        13
+sale (partial)      1
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    141
+0    109
+Name: count, dtype: int64
+Class balance: 56.40% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         61
+dtype: int64
+Dropped 97 rows with missing values
+Missing values after handling: 0
+   BABA: Train=100.0%, Test=74.2%, Gap=25.8%
+Successfully fetched 251 days of data for QCOM
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 5863 news items for QCOM
+📅 After date filter: 430 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 430 unique news items
+📊 Date range: 2019-01-02 21:44:00 to 2019-12-22 17:25:00
+💭 Average sentiment: 0.093
+Fetching politician trading data for QCOM...
+Successfully fetched 283 politician trades for QCOM
+Date range: 2014-01-16 to 2025-10-10
+
+Transaction type breakdown:
+transaction_type
+purchase          128
+sale              116
+sale (full)        24
+sale (partial)     15
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    135
+0    115
+Name: count, dtype: int64
+Class balance: 54.00% positive (price increase)
+
+Missing values before handling:
+SMA_10               9
+SMA_20              19
+SMA_50              49
+RSI                 13
+MACD                25
+MACD_signal         33
+MACD_diff           33
+Price_change         1
+Volume_change        1
+SMA_10_20_cross     19
+SMA_20_50_cross     49
+news_count         100
+dtype: int64
+Dropped 130 rows with missing values
+Missing values after handling: 0
+   QCOM: Train=100.0%, Test=58.3%, Gap=41.7%
+Successfully fetched 251 days of data for MU
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:35:46] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:35:54] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:36:03] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 6293 news items for MU
+📅 After date filter: 536 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 536 unique news items
+📊 Date range: 2019-01-02 09:08:00 to 2019-12-27 10:10:00
+💭 Average sentiment: 0.079
+Fetching politician trading data for MU...
+Successfully fetched 231 politician trades for MU
+Date range: 2015-01-08 to 2025-10-10
+
+Transaction type breakdown:
+transaction_type
+purchase          128
+sale               94
+sale (partial)      6
+sale (full)         2
+exchange            1
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    128
+0    122
+Name: count, dtype: int64
+Class balance: 51.20% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         63
+dtype: int64
+Dropped 96 rows with missing values
+Missing values after handling: 0
+   MU: Train=100.0%, Test=38.7%, Gap=61.3%
+Successfully fetched 251 days of data for TSLA
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 3805 news items for TSLA
+📅 After date filter: 730 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 730 unique news items
+📊 Date range: 2019-07-01 15:29:00 to 2019-12-30 18:57:00
+💭 Average sentiment: 0.099
+Fetching politician trading data for TSLA...
+Successfully fetched 321 politician trades for TSLA
+Date range: 2014-02-14 to 2025-10-22
+
+Transaction type breakdown:
+transaction_type
+purchase          164
+sale              144
+sale (full)         9
+sale (partial)      4
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    131
+0    119
+Name: count, dtype: int64
+Class balance: 52.40% positive (price increase)
+
+Missing values before handling:
+SMA_10               9
+SMA_20              19
+SMA_50              49
+RSI                 13
+MACD                25
+MACD_signal         33
+MACD_diff           33
+Price_change         1
+Volume_change        1
+SMA_10_20_cross     19
+SMA_20_50_cross     49
+news_count         128
+dtype: int64
+Dropped 128 rows with missing values
+Missing values after handling: 0
+   TSLA: Train=100.0%, Test=52.0%, Gap=48.0%
+Successfully fetched 251 days of data for AAPL
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 942 news items for AAPL
+📅 After date filter: 0 items from 2019-01-01 to 2019-12-31
+⚠️  No news in date range
+Fetching politician trading data for AAPL...
+Successfully fetched 1041 politician trades for AAPL
+Date range: 2014-01-07 to 2025-11-03
+
+Transaction type breakdown:
+transaction_type
+purchase          479
+sale              437
+sale (partial)     82
+sale (full)        42
+exchange            1
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+No sentiment data provided - skipping sentiment features
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 37)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    145
+0    105
+Name: count, dtype: int64
+Class balance: 58.00% positive (price increase)/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:36:11] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:36:19] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:36:28] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+dtype: int64
+Dropped 49 rows with missing values
+Missing values after handling: 0
+   AAPL: Train=100.0%, Test=56.1%, Gap=43.9%
+Successfully fetched 251 days of data for MSFT
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 0 news items for MSFT
+⚠️  No news found for ticker MSFT
+Fetching politician trading data for MSFT...
+Successfully fetched 1239 politician trades for MSFT
+Date range: 2014-01-07 to 2025-10-28
+
+Transaction type breakdown:
+transaction_type
+purchase          587
+sale              561
+sale (partial)     60
+sale (full)        29
+exchange            2
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+No sentiment data provided - skipping sentiment features
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 37)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    147
+0    103
+Name: count, dtype: int64
+Class balance: 58.80% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+dtype: int64
+Dropped 49 rows with missing values
+Missing values after handling: 0
+   MSFT: Train=100.0%, Test=43.9%, Gap=56.1%
+Successfully fetched 251 days of data for GOOGL
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 3339 news items for GOOGL
+📅 After date filter: 762 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 762 unique news items
+📊 Date range: 2019-01-02 21:44:00 to 2019-12-30 17:52:00
+💭 Average sentiment: 0.071
+Fetching politician trading data for GOOGL...
+Successfully fetched 532 politician trades for GOOGL
+Date range: 2014-05-15 to 2025-10-30
+
+Transaction type breakdown:
+transaction_type
+sale              286
+purchase          232
+sale (full)         7
+exchange            4
+sale (partial)      3
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    133
+0    117
+Name: count, dtype: int64
+Class balance: 53.20% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         31
+dtype: int64
+Dropped 72 rows with missing values
+Missing values after handling: 0
+   GOOGL: Train=100.0%, Test=52.8%, Gap=47.2%
+Successfully fetched 251 days of data for AMZN
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 608 news items for AMZN
+📅 After date filter: 0 items from 2019-01-01 to 2019-12-31
+⚠️  No news in date range
+Fetching politician trading data for AMZN...
+Successfully fetched 753 politician trades for AMZN
+Date range: 2014-02-04 to 2025-10-28
+
+Transaction type breakdown:
+transaction_type
+purchase          429
+sale              295
+sale (full)        18
+sale (partial)      9
+exchange            2
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+No sentiment data provided - skipping sentiment features
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 37)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:36:51] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:36:59] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:37:07] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+
+
+Target distribution:
+Target
+1    134
+0    116
+Name: count, dtype: int64
+Class balance: 53.60% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+dtype: int64
+Dropped 49 rows with missing values
+Missing values after handling: 0
+   AMZN: Train=100.0%, Test=48.8%, Gap=51.2%
+   📊 Average: Train=100.0%, Test=53.1%, Gap=46.9%
+
+[4/5] Testing: MaxDepth=4
+--------------------------------------------------------------------------------
+Successfully fetched 251 days of data for NFLX
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 6037 news items for NFLX
+📅 After date filter: 798 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 798 unique news items
+📊 Date range: 2019-01-01 17:38:00 to 2019-12-30 21:13:00
+💭 Average sentiment: 0.101
+Fetching politician trading data for NFLX...
+Successfully fetched 373 politician trades for NFLX
+Date range: 2014-04-03 to 2025-10-28
+
+Transaction type breakdown:
+transaction_type
+purchase          194
+sale              144
+sale (full)        31
+sale (partial)      3
+exchange            1
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    129
+0    121
+Name: count, dtype: int64
+Class balance: 51.60% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         50
+dtype: int64
+Dropped 86 rows with missing values
+Missing values after handling: 0
+   NFLX: Train=100.0%, Test=54.5%, Gap=45.5%
+Successfully fetched 251 days of data for NVDA
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 6279 news items for NVDA
+📅 After date filter: 505 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 505 unique news items
+📊 Date range: 2019-01-02 09:05:00 to 2019-12-30 20:20:00
+💭 Average sentiment: 0.072
+Fetching politician trading data for NVDA...
+Successfully fetched 581 politician trades for NVDA
+Date range: 2016-01-20 to 2025-11-03
+
+Transaction type breakdown:
+transaction_type
+purchase          325
+sale              227
+sale (full)        16
+sale (partial)     10
+exchange            3
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    136
+0    114
+Name: count, dtype: int64
+Class balance: 54.40% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         74
+dtype: int64
+Dropped 105 rows with missing values
+Missing values after handling: 0
+   NVDA: Train=100.0%, Test=44.8%, Gap=55.2%
+Successfully fetched 251 days of data for BABA
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 5683 news items for BABA
+📅 After date filter: 444 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 444 unique news items
+📊 Date range: 2019-01-02 14:47:00 to 2019-12-30 12:04:00
+💭 Average sentiment: 0.090
+Fetching politician trading data for BABA...
+Error fetching politician trades: HTTPSConnectionPool(host='api.quiverquant.com', port=443): Read timed out. (read timeout=15)
+Returning empty DataFrame
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+No politician trade data provided - skipping politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 16)/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:37:16] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:37:25] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:37:33] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count']
+
+Target distribution:
+Target
+1    141
+0    109
+Name: count, dtype: int64
+Class balance: 56.40% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         61
+dtype: int64
+Dropped 97 rows with missing values
+Missing values after handling: 0
+   BABA: Train=100.0%, Test=67.7%, Gap=32.3%
+Successfully fetched 251 days of data for QCOM
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 5863 news items for QCOM
+📅 After date filter: 430 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 430 unique news items
+📊 Date range: 2019-01-02 21:44:00 to 2019-12-22 17:25:00
+💭 Average sentiment: 0.093
+Fetching politician trading data for QCOM...
+Successfully fetched 283 politician trades for QCOM
+Date range: 2014-01-16 to 2025-10-10
+
+Transaction type breakdown:
+transaction_type
+purchase          128
+sale              116
+sale (full)        24
+sale (partial)     15
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    135
+0    115
+Name: count, dtype: int64
+Class balance: 54.00% positive (price increase)
+
+Missing values before handling:
+SMA_10               9
+SMA_20              19
+SMA_50              49
+RSI                 13
+MACD                25
+MACD_signal         33
+MACD_diff           33
+Price_change         1
+Volume_change        1
+SMA_10_20_cross     19
+SMA_20_50_cross     49
+news_count         100
+dtype: int64
+Dropped 130 rows with missing values
+Missing values after handling: 0
+   QCOM: Train=100.0%, Test=70.8%, Gap=29.2%
+Successfully fetched 251 days of data for MU
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 6293 news items for MU
+📅 After date filter: 536 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 536 unique news items
+📊 Date range: 2019-01-02 09:08:00 to 2019-12-27 10:10:00
+💭 Average sentiment: 0.079
+Fetching politician trading data for MU...
+Successfully fetched 231 politician trades for MU
+Date range: 2015-01-08 to 2025-10-10
+
+Transaction type breakdown:
+transaction_type
+purchase          128
+sale               94
+sale (partial)      6
+sale (full)         2
+exchange            1
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    128
+0    122
+Name: count, dtype: int64
+Class balance: 51.20% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         63
+dtype: int64
+Dropped 96 rows with missing values
+Missing values after handling: 0
+   MU: Train=100.0%, Test=45.2%, Gap=54.8%
+Successfully fetched 251 days of data for TSLA
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 3805 news items for TSLA
+📅 After date filter: 730 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 730 unique news items
+📊 Date range: 2019-07-01 15:29:00 to 2019-12-30 18:57:00
+💭 Average sentiment: 0.099
+Fetching politician trading data for TSLA...
+Successfully fetched 321 politician trades for TSLA
+Date range: 2014-02-14 to 2025-10-22
+
+Transaction type breakdown:
+transaction_type
+purchase          164
+sale              144
+sale (full)         9
+sale (partial)      4
+Name: count, dtype: int64
+Creating SMA indicators.../Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:37:42] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:37:51] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    131
+0    119
+Name: count, dtype: int64
+Class balance: 52.40% positive (price increase)
+
+Missing values before handling:
+SMA_10               9
+SMA_20              19
+SMA_50              49
+RSI                 13
+MACD                25
+MACD_signal         33
+MACD_diff           33
+Price_change         1
+Volume_change        1
+SMA_10_20_cross     19
+SMA_20_50_cross     49
+news_count         128
+dtype: int64
+Dropped 128 rows with missing values
+Missing values after handling: 0
+   TSLA: Train=100.0%, Test=52.0%, Gap=48.0%
+Successfully fetched 251 days of data for AAPL
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 942 news items for AAPL
+📅 After date filter: 0 items from 2019-01-01 to 2019-12-31
+⚠️  No news in date range
+Fetching politician trading data for AAPL...
+Successfully fetched 1041 politician trades for AAPL
+Date range: 2014-01-07 to 2025-11-03
+
+Transaction type breakdown:
+transaction_type
+purchase          479
+sale              437
+sale (partial)     82
+sale (full)        42
+exchange            1
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+No sentiment data provided - skipping sentiment features
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 37)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    145
+0    105
+Name: count, dtype: int64
+Class balance: 58.00% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+dtype: int64
+Dropped 49 rows with missing values
+Missing values after handling: 0
+   AAPL: Train=100.0%, Test=61.0%, Gap=39.0%
+Successfully fetched 251 days of data for MSFT
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 0 news items for MSFT
+⚠️  No news found for ticker MSFT
+Fetching politician trading data for MSFT...
+Successfully fetched 1239 politician trades for MSFT
+Date range: 2014-01-07 to 2025-10-28
+
+Transaction type breakdown:
+transaction_type
+purchase          587
+sale              561
+sale (partial)     60
+sale (full)        29
+exchange            2
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+No sentiment data provided - skipping sentiment features
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 37)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    147
+0    103
+Name: count, dtype: int64
+Class balance: 58.80% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+dtype: int64
+Dropped 49 rows with missing values
+Missing values after handling: 0
+   MSFT: Train=100.0%, Test=43.9%, Gap=56.1%
+Successfully fetched 251 days of data for GOOGL
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:37:59] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:38:07] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:38:16] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+
+🎯 Found 3339 news items for GOOGL
+📅 After date filter: 762 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 762 unique news items
+📊 Date range: 2019-01-02 21:44:00 to 2019-12-30 17:52:00
+💭 Average sentiment: 0.071
+Fetching politician trading data for GOOGL...
+Successfully fetched 532 politician trades for GOOGL
+Date range: 2014-05-15 to 2025-10-30
+
+Transaction type breakdown:
+transaction_type
+sale              286
+purchase          232
+sale (full)         7
+exchange            4
+sale (partial)      3
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    133
+0    117
+Name: count, dtype: int64
+Class balance: 53.20% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         31
+dtype: int64
+Dropped 72 rows with missing values
+Missing values after handling: 0
+   GOOGL: Train=100.0%, Test=47.2%, Gap=52.8%
+Successfully fetched 251 days of data for AMZN
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 608 news items for AMZN
+📅 After date filter: 0 items from 2019-01-01 to 2019-12-31
+⚠️  No news in date range
+Fetching politician trading data for AMZN...
+Successfully fetched 753 politician trades for AMZN
+Date range: 2014-02-04 to 2025-10-28
+
+Transaction type breakdown:
+transaction_type
+purchase          429
+sale              295
+sale (full)        18
+sale (partial)      9
+exchange            2
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+No sentiment data provided - skipping sentiment features
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 37)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    134
+0    116
+Name: count, dtype: int64
+Class balance: 53.60% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+dtype: int64
+Dropped 49 rows with missing values
+Missing values after handling: 0
+   AMZN: Train=100.0%, Test=46.3%, Gap=53.7%
+   📊 Average: Train=100.0%, Test=53.4%, Gap=46.6%
+
+[5/5] Testing: Depth4+Alpha1.0
+--------------------------------------------------------------------------------
+Successfully fetched 251 days of data for NFLX
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 6037 news items for NFLX
+📅 After date filter: 798 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 798 unique news items
+📊 Date range: 2019-01-01 17:38:00 to 2019-12-30 21:13:00
+💭 Average sentiment: 0.101
+Fetching politician trading data for NFLX...
+Successfully fetched 373 politician trades for NFLX
+Date range: 2014-04-03 to 2025-10-28
+
+Transaction type breakdown:
+transaction_type
+purchase          194
+sale              144
+sale (full)        31
+sale (partial)      3
+exchange            1
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    129
+0    121
+Name: count, dtype: int64/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:38:24] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:38:33] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:38:42] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+
+Class balance: 51.60% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         50
+dtype: int64
+Dropped 86 rows with missing values
+Missing values after handling: 0
+   NFLX: Train=100.0%, Test=66.7%, Gap=33.3%
+Successfully fetched 251 days of data for NVDA
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 6279 news items for NVDA
+📅 After date filter: 505 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 505 unique news items
+📊 Date range: 2019-01-02 09:05:00 to 2019-12-30 20:20:00
+💭 Average sentiment: 0.072
+Fetching politician trading data for NVDA...
+Successfully fetched 581 politician trades for NVDA
+Date range: 2016-01-20 to 2025-11-03
+
+Transaction type breakdown:
+transaction_type
+purchase          325
+sale              227
+sale (full)        16
+sale (partial)     10
+exchange            3
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    136
+0    114
+Name: count, dtype: int64
+Class balance: 54.40% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         74
+dtype: int64
+Dropped 105 rows with missing values
+Missing values after handling: 0
+   NVDA: Train=100.0%, Test=51.7%, Gap=48.3%
+Successfully fetched 251 days of data for BABA
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 5683 news items for BABA
+📅 After date filter: 444 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 444 unique news items
+📊 Date range: 2019-01-02 14:47:00 to 2019-12-30 12:04:00
+💭 Average sentiment: 0.090
+Fetching politician trading data for BABA...
+Successfully fetched 238 politician trades for BABA
+Date range: 2014-10-16 to 2025-10-05
+
+Transaction type breakdown:
+transaction_type
+purchase          126
+sale               98
+sale (full)        13
+sale (partial)      1
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    141
+0    109
+Name: count, dtype: int64
+Class balance: 56.40% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         61
+dtype: int64
+Dropped 97 rows with missing values
+Missing values after handling: 0
+   BABA: Train=100.0%, Test=64.5%, Gap=35.5%
+Successfully fetched 251 days of data for QCOM
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 5863 news items for QCOM
+📅 After date filter: 430 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 430 unique news items
+📊 Date range: 2019-01-02 21:44:00 to 2019-12-22 17:25:00
+💭 Average sentiment: 0.093
+Fetching politician trading data for QCOM...
+Successfully fetched 283 politician trades for QCOM
+Date range: 2014-01-16 to 2025-10-10
+
+Transaction type breakdown:
+transaction_type
+purchase          128
+sale              116
+sale (full)        24
+sale (partial)     15
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:38:50] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:38:59] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    135
+0    115
+Name: count, dtype: int64
+Class balance: 54.00% positive (price increase)
+
+Missing values before handling:
+SMA_10               9
+SMA_20              19
+SMA_50              49
+RSI                 13
+MACD                25
+MACD_signal         33
+MACD_diff           33
+Price_change         1
+Volume_change        1
+SMA_10_20_cross     19
+SMA_20_50_cross     49
+news_count         100
+dtype: int64
+Dropped 130 rows with missing values
+Missing values after handling: 0
+   QCOM: Train=100.0%, Test=58.3%, Gap=41.7%
+Successfully fetched 251 days of data for MU
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 6293 news items for MU
+📅 After date filter: 536 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 536 unique news items
+📊 Date range: 2019-01-02 09:08:00 to 2019-12-27 10:10:00
+💭 Average sentiment: 0.079
+Fetching politician trading data for MU...
+Successfully fetched 231 politician trades for MU
+Date range: 2015-01-08 to 2025-10-10
+
+Transaction type breakdown:
+transaction_type
+purchase          128
+sale               94
+sale (partial)      6
+sale (full)         2
+exchange            1
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    128
+0    122
+Name: count, dtype: int64
+Class balance: 51.20% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         63
+dtype: int64
+Dropped 96 rows with missing values
+Missing values after handling: 0
+   MU: Train=100.0%, Test=32.3%, Gap=67.7%
+Successfully fetched 251 days of data for TSLA
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 3805 news items for TSLA
+📅 After date filter: 730 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 730 unique news items
+📊 Date range: 2019-07-01 15:29:00 to 2019-12-30 18:57:00
+💭 Average sentiment: 0.099
+Fetching politician trading data for TSLA...
+Successfully fetched 321 politician trades for TSLA
+Date range: 2014-02-14 to 2025-10-22
+
+Transaction type breakdown:
+transaction_type
+purchase          164
+sale              144
+sale (full)         9
+sale (partial)      4
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    131
+0    119
+Name: count, dtype: int64
+Class balance: 52.40% positive (price increase)
+
+Missing values before handling:
+SMA_10               9
+SMA_20              19
+SMA_50              49
+RSI                 13
+MACD                25
+MACD_signal         33
+MACD_diff           33
+Price_change         1
+Volume_change        1
+SMA_10_20_cross     19
+SMA_20_50_cross     49
+news_count         128
+dtype: int64
+Dropped 128 rows with missing values
+Missing values after handling: 0
+   TSLA: Train=100.0%, Test=48.0%, Gap=52.0%
+Successfully fetched 251 days of data for AAPL
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:39:07] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+/Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:39:16] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 942 news items for AAPL
+📅 After date filter: 0 items from 2019-01-01 to 2019-12-31
+⚠️  No news in date range
+Fetching politician trading data for AAPL...
+Successfully fetched 1041 politician trades for AAPL
+Date range: 2014-01-07 to 2025-11-03
+
+Transaction type breakdown:
+transaction_type
+purchase          479
+sale              437
+sale (partial)     82
+sale (full)        42
+exchange            1
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+No sentiment data provided - skipping sentiment features
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 37)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    145
+0    105
+Name: count, dtype: int64
+Class balance: 58.00% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+dtype: int64
+Dropped 49 rows with missing values
+Missing values after handling: 0
+   AAPL: Train=100.0%, Test=61.0%, Gap=39.0%
+Successfully fetched 251 days of data for MSFT
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 0 news items for MSFT
+⚠️  No news found for ticker MSFT
+Fetching politician trading data for MSFT...
+Successfully fetched 1239 politician trades for MSFT
+Date range: 2014-01-07 to 2025-10-28
+
+Transaction type breakdown:
+transaction_type
+purchase          587
+sale              561
+sale (partial)     60
+sale (full)        29
+exchange            2
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+No sentiment data provided - skipping sentiment features
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 37)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    147
+0    103
+Name: count, dtype: int64
+Class balance: 58.80% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+dtype: int64
+Dropped 49 rows with missing values
+Missing values after handling: 0
+   MSFT: Train=100.0%, Test=39.0%, Gap=61.0%
+Successfully fetched 251 days of data for GOOGL
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 3339 news items for GOOGL
+📅 After date filter: 762 items from 2019-01-01 to 2019-12-31
+🤖 Calculating VADER sentiment scores...
+✅ Successfully processed 762 unique news items
+📊 Date range: 2019-01-02 21:44:00 to 2019-12-30 17:52:00
+💭 Average sentiment: 0.071
+Fetching politician trading data for GOOGL...
+Successfully fetched 532 politician trades for GOOGL
+Date range: 2014-05-15 to 2025-10-30
+
+Transaction type breakdown:
+transaction_type
+sale              286
+purchase          232
+sale (full)         7
+exchange            4
+sale (partial)      3
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    133
+0    117
+Name: count, dtype: int64
+Class balance: 53.20% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         31
+dtype: int64
+Dropped 72 rows with missing values
+Missing values after handling: 0
+   GOOGL: Train=100.0%, Test=52.8%, Gap=47.2%
+Successfully fetched 251 days of data for AMZN
+📂 Loading 3 dataset file(s) and combining...
+   Loading: analyst_ratings_processed.csv... 1,400,469 rows
+   Loading: raw_analyst_ratings.csv... 1,407,328 rows
+   Loading: raw_partner_headlines.csv... 1,845,559 rows
+✅ Combined 3 datasets: 4,653,356 total rows
+📋 Columns: ['Unnamed: 0', 'title', 'date', 'stock', 'headline', 'url', 'publisher']
+✅ Combined 'headline' and 'title' columns → 'unified_headline'
+✅ Using columns: ticker='stock', date='date', headline='unified_headline' from 4,653,356 total rows
+🎯 Found 608 news items for AMZN
+📅 After date filter: 0 items from 2019-01-01 to 2019-12-31
+⚠️  No news in date range
+Fetching politician trading data for AMZN...
+Successfully fetched 753 politician trades for AMZN
+Date range: 2014-02-04 to 2025-10-28
+
+Transaction type breakdown:
+transaction_type
+purchase          429
+sale              295
+sale (full)        18
+sale (partial)      9
+exchange            2
+Name: count, dtype: int64
+Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+No sentiment data provided - skipping sentiment features
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 37)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    134
+0    116
+Name: count, dtype: int64
+Class balance: 53.60% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+dtype: int64
+Dropped 49 rows with missing values
+Missing values after handling: 0
+   AMZN: Train=100.0%, Test=48.8%, Gap=51.2%
+   📊 Average: Train=100.0%, Test=52.3%, Gap=47.7%
+
+================================================================================
+[4/4] Saving results...
+✅ Saved summary to results/overfitting_experiments.csv
+✅ Saved detailed per-stock results to results/overfitting_experiments_detailed.csv
+
+================================================================================
+EXPERIMENT RESULTS SUMMARY
+================================================================================
+
+Experiment           Avg Train    Avg Test     Overfit Gap    Gap Reduction  
+--------------------------------------------------------------------------------
+Alpha=1.0            100.0%       53.7%        46.3%          -228.2%        
+MaxDepth=4           100.0%       53.4%        46.6%          -264.5%        
+Alpha=0.5            100.0%       53.1%        46.9%          -289.4%        
+Baseline             100.0%       52.4%        47.6%          -363.6%        
+Depth4+Alpha1.0      100.0%       52.3%        47.7%          -369.4%        
+
+================================================================================
+BEST CONFIGURATIONS:
+================================================================================
+
+1. SMALLEST OVERFIT GAP (Top 3):
+--------------------------------------------------------------------------------
+1. Alpha=1.0
+   max_depth=6, min_child_weight=1, alpha=1.0, lambda=1
+   Gap: 46.3% (improvement: -228.2%)
+   Test Accuracy: 53.7%
+
+2. MaxDepth=4
+   max_depth=4, min_child_weight=1, alpha=0.0, lambda=1
+   Gap: 46.6% (improvement: -264.5%)
+   Test Accuracy: 53.4%
+
+3. Alpha=0.5
+   max_depth=6, min_child_weight=1, alpha=0.5, lambda=1
+   Gap: 46.9% (improvement: -289.4%)
+   Test Accuracy: 53.1%
+
+2. HIGHEST TEST ACCURACY (Top 3):
+--------------------------------------------------------------------------------
+1. Alpha=1.0
+   max_depth=6, min_child_weight=1, alpha=1.0, lambda=1
+   Test Accuracy: 53.7%
+   Gap: 46.3%
+
+2. MaxDepth=4
+   max_depth=4, min_child_weight=1, alpha=0.0, lambda=1
+   Test Accuracy: 53.4%
+   Gap: 46.6%
+
+3. Alpha=0.5
+   max_depth=6, min_child_weight=1, alpha=0.5, lambda=1
+   Test Accuracy: 53.1%
+   Gap: 46.9%
+
+================================================================================
+RECOMMENDATIONS:
+================================================================================
+
+✅ RECOMMENDED CONFIGURATION: Alpha=1.0
+   Parameters:
+   - max_depth = 6
+   - min_child_weight = 1
+   - alpha = 1.0
+   - lambda = 1
+   - gamma = 0
+
+   Expected Performance:
+   - Test Accuracy: 53.7%
+   - Overfit Gap: 46.3% (vs baseline 44%)
+   - Gap Reduction: -228.2%
+
+================================================================================
+Completed: 2025-11-04 15:39:16
+================================================================================

@@ -26,6 +26,8 @@ def train_xgboost_model(X_train, y_train,
                        colsample_bytree=0.8,
                        gamma=0,
                        min_child_weight=1,
+                       alpha=1.0,  # L1 regularization (optimal: 1.0, reduces overfitting)
+                       reg_lambda=1,  # L2 regularization
                        random_state=42,
                        verbose=True,
                        use_gpu=False):
@@ -88,6 +90,8 @@ def train_xgboost_model(X_train, y_train,
         colsample_bytree=colsample_bytree,
         gamma=gamma,
         min_child_weight=min_child_weight,
+        reg_alpha=alpha,  # L1 regularization (Lasso) - penalizes absolute values
+        reg_lambda=reg_lambda,  # L2 regularization (Ridge) - penalizes squared values
         tree_method=tree_method,
         random_state=random_state,
         objective='binary:logistic',
@@ -104,6 +108,8 @@ def train_xgboost_model(X_train, y_train,
         print(f"  colsample_bytree: {colsample_bytree}")
         print(f"  gamma: {gamma}")
         print(f"  min_child_weight: {min_child_weight}")
+        print(f"  reg_alpha (L1): {alpha}")
+        print(f"  reg_lambda (L2): {reg_lambda}")
         print(f"  tree_method: {tree_method}")
         print(f"\nTraining model...")
     

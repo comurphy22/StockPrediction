@@ -1,0 +1,119 @@
+======================================================================
+MVP VALIDATION V2 - ENHANCED NEWS COVERAGE
+======================================================================
+Started: 2025-11-03 15:42:04
+
+[1/4] Loading optimal feature set...
+✅ Loaded 25 optimal features
+   Top 5 features: ['avg_sentiment_compound', 'HL_spread', 'Price_change', 'SMA_50', 'Volume_change']
+
+[2/4] Test stocks selected:
+   High coverage: NFLX, NVDA, BABA, QCOM, MU
+   Major tech:    TSLA, AAPL, MSFT, GOOGL, AMZN
+   Total: 10 stocks
+   📰 Using ENHANCED keyword matching for better news coverage
+
+[3/4] Testing stocks...
+======================================================================
+
+[1/10] Testing NFLX
+----------------------------------------------------------------------
+   [1/7] Fetching stock data for 2019... Successfully fetched 251 days of data for NFLX
+✅ 251 trading days
+   [2/7] Loading news sentiment (ENHANCED)... 📰 Enhanced news loading for NFLX...
+   Loading 3 dataset files...
+   ✅ Loaded: analyst_ratings_processed.csv (1400469 rows)
+   ✅ Loaded: raw_analyst_ratings.csv (1407328 rows)
+   ✅ Loaded: raw_partner_headlines.csv (1845559 rows)
+   ✅ Combined 3 datasets: 4653356 total rows
+   📊 Direct ticker match: 6037 articles
+   🔍 Searching for keywords: ['Netflix']
+   📊 Keyword match: 9650 articles
+   📊 Combined (deduplicated): 8373 articles
+   📅 After date filter (2019-01-01 to 2019-12-31): 803 articles
+   🤖 Calculating VADER sentiment scores...
+   ✅ Processed 803 articles
+   📊 Date range: 2019-01-01 17:38:00 to 2019-12-30 21:13:00
+   💭 Average sentiment: 0.100
+✅ 803 news items
+   [3/7] Loading politician trades... Fetching politician trading data for NFLX...
+Successfully fetched 373 politician trades for NFLX
+Date range: 2014-04-03 to 2025-10-28
+
+Transaction type breakdown:
+transaction_type
+purchase          194
+sale              144
+sale (full)        31
+sale (partial)      3
+exchange            1
+Name: count, dtype: int64
+✅ 373 trades
+   [4/7] Engineering features... Creating SMA indicators...
+Creating RSI indicator...
+Creating MACD indicators...
+Merging sentiment data...
+Merging politician trade data...
+Creating advanced politician features...
+🏛️  Creating advanced politician features...
+   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage
+   ✅ Temporal features: 3 rolling windows + momentum
+   ✅ Recency indicator: days_since_last_trade
+   ✅ Quality metrics: conviction_score
+   ✅ Added 23 advanced politician features
+      ✅ Added 23 advanced politician features
+Creating target variable...
+
+Feature engineering complete!
+Features shape: (250, 41)
+Target shape: (250,)
+Features: ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_signal', 'MACD_diff', 'Price_change', 'Volume_change', 'HL_spread', 'SMA_10_20_cross', 'SMA_20_50_cross', 'avg_sentiment_compound', 'avg_sentiment_positive', 'avg_sentiment_negative', 'news_count', 'politician_buy_count', 'politician_trade_amount', 'buy_count', 'sell_count', 'full_sale_count', 'partial_sale_count', 'total_amount', 'buy_amount', 'sell_amount', 'net_trade_index', 'net_dollar_flow', 'buy_percentage', 'trades_last_30d', 'amount_last_30d', 'net_flow_last_30d', 'trades_last_60d', 'amount_last_60d', 'net_flow_last_60d', 'trades_last_90d', 'amount_last_90d', 'net_flow_last_90d', 'trade_momentum_30d', 'dollar_momentum_30d', 'days_since_last_trade', 'conviction_score']
+
+Target distribution:
+Target
+1    129
+0    121
+Name: count, dtype: int64
+Class balance: 51.60% positive (price increase)
+
+Missing values before handling:
+SMA_10              9
+SMA_20             19
+SMA_50             49
+RSI                13
+MACD               25
+MACD_signal        33
+MACD_diff          33
+Price_change        1
+Volume_change       1
+SMA_10_20_cross    19
+SMA_20_50_cross    49
+news_count         49
+dtype: int64
+Dropped 86 rows with missing values
+Missing values after handling: 0
+✅ 164 samples with 41 features
+   [5/7] Preparing training data... ✅ Train: 131, Test: 33
+   [6/7] Training XGBoost model... /Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [15:42:20] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
+✅ Train accuracy: 100.00%
+   [7/7] Evaluating on test set... ✅ Test accuracy: 54.55%
+
+   📊 Summary for NFLX:
+      Test Accuracy: 54.55%
+      Precision:     59.09%
+      Recall:        68.42%
+      F1 Score:      63.41%
+      Overfit Gap:   +45.45%
+      News Articles: 803 (enhanced matching)
+      Runtime:       15.4s
+
+[2/10] Testing NVDA
+----------------------------------------------------------------------
+   [1/7] Fetching stock data for 2019... Successfully fetched 251 days of data for NVDA
+✅ 251 trading days
+   [2/7] Loading news sentiment (ENHANCED)... 📰 Enhanced news loading for NVDA...
+   Loading 3 dataset files...
+   ✅ Loaded: analyst_ratings_processed.csv (1400469 rows)

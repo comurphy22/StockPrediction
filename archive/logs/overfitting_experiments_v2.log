@@ -1,0 +1,24 @@
+======================================================================
+OVERFITTING FIX V2 - HYPERPARAMETER TUNING
+======================================================================
+Started: 2025-11-03 18:00:15
+
+[1/3] Loading optimal feature set...
+✅ Loaded 25 optimal features
+
+[2/3] Testing 5 configurations on 3 stocks
+======================================================================
+
+[Config 1/5] Baseline (Current)
+----------------------------------------------------------------------
+  n_estimators: 100
+  max_depth: 6
+  learning_rate: 0.1
+  subsample: 0.8
+  colsample_bytree: 1.0
+  min_child_weight: 1
+  gamma: 0
+  reg_alpha: 0
+  reg_lambda: 1
+
+  [1/3] Testing BABA... 

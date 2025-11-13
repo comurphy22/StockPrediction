@@ -1,0 +1,5 @@
+ticker,test_accuracy,precision,recall,f1_score,overfit_gap,news_articles,runtime_seconds
+NFLX,57.58,66.67,52.63,58.82,42.42,803,2.9
+NVDA,62.07,53.85,58.33,56.00,37.93,513,1.0
+BABA,41.94,50.00,38.89,43.75,58.06,450,0.8
+QCOM,62.50,60.00,92.31,72.73,37.50,434,0.8

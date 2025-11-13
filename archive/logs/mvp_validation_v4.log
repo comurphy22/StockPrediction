@@ -1,0 +1,32 @@
+======================================================================
+MVP VALIDATION V4 - FINANCIAL SENTIMENT CLASSIFIER
+======================================================================
+Started: 2025-11-04 14:44:48
+
+[1/4] Loading optimal feature set...
+✅ Loaded 25 optimal features
+   Top 5 features: ['avg_sentiment_compound', 'HL_spread', 'Price_change', 'SMA_50', 'Volume_change']
+
+[2/4] Test stocks selected:
+   High coverage: NFLX, NVDA, BABA, QCOM, MU
+   Major tech:    TSLA, AAPL, MSFT, GOOGL, AMZN
+   Total: 10 stocks
+   📰 Using ENHANCED keyword matching for better news coverage
+
+[3/4] Testing stocks...
+======================================================================
+
+[1/10] Testing NFLX
+----------------------------------------------------------------------
+   [1/7] Fetching stock data for 2019... Successfully fetched 251 days of data for NFLX
+✅ 251 trading days
+   [2/7] Loading news with Financial Sentiment...
+📂 Loading from cache (fast)...
+✅ Loaded 4653355 cached articles
+   📊 Found 803 articles (798 direct + 636 keyword)
+   🤖 Calculating sentiment...
+   ✅ Processed 803 articles with sentiment
+   🤖 Scoring 803 headlines with Financial Classifier... /Users/tobycoleman/mining/StockPrediction/venv/lib/python3.13/site-packages/xgboost/training.py:199: UserWarning: [14:44:52] WARNING: /Users/runner/work/xgboost/xgboost/src/learner.cc:790: 
+Parameters: { "use_label_encoder" } are not used.
+
+  bst.update(dtrain, iteration=i, fobj=obj)
