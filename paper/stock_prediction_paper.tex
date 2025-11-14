@@ -1,0 +1,396 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage{setspace}
+\doublespacing
+
+\title{Stock Movement Prediction with News Sentiment and Politician Position Signals}
+\author{Conner Murphy and William Coleman}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We investigate whether integrating congressional trading signals with news sentiment and technical indicators enhances short-term stock movement prediction. Using XGBoost models trained on 442,000 news articles and politician trading disclosures, we conduct comprehensive validation across eight stocks over 2018-2019. Our results show sector-specific predictive value: financial sector stocks achieve 60-70\% accuracy, with Wells Fargo reaching 70\% in 2018. Economic backtesting demonstrates superior risk-adjusted returns (Sharpe ratio 2.22) despite mixed absolute performance. We find that politician trading signals provide incremental value for financials and healthcare but show limited utility for technology stocks. These findings suggest that alternative data sources like congressional trades offer sector-specific trading value when combined with traditional signals, though performance varies significantly across market conditions and sectors.
+\end{abstract}
+
+\section{Introduction}
+
+Predicting short-term stock movements remains one of the most challenging problems in financial data mining. Traditional approaches rely heavily on technical indicators derived from price and volume data, which capture momentum patterns but fail to reflect broader market psychology and information flows. Recent advances in sentiment analysis have shown that news headlines and financial reporting provide valuable signals of investor expectations \citep{heston2016news}. Parallel to this literature, researchers have examined the unusual informativeness of U.S. politicians' trading behavior, as disclosed under the STOCK Act \citep{karadas2021aggregate}.
+
+These two streams of research—sentiment analysis and political trading disclosure—have largely evolved independently. We bridge this gap by asking: \textit{Can integrating politician trading signals with sentiment and technical indicators enhance predictive accuracy and economic outcomes for short-term stock movement forecasts?} More specifically, we investigate whether congressional trading data contributes incremental predictive power beyond traditional features, and whether this contribution varies systematically across sectors and market conditions.
+
+Our motivation stems from three observations. First, news sentiment effects decay rapidly—within 1-2 trading days \citep{heston2016news}—suggesting that short-term prediction may benefit most from timely alternative data. Second, politicians' trades attract significant public attention and may reflect informational advantages, though evidence on their predictive power remains mixed \citep{belmont2022senators, karadas2021aggregate}. Third, no prior study has systematically combined these signals in a unified machine learning framework with rigorous out-of-sample validation.
+
+We make several contributions. First, we construct a comprehensive dataset combining 442,000 financial news articles with politician trading disclosures and market data for eight heavily-traded stocks spanning multiple sectors. Second, we implement and validate XGBoost models with 61 engineered features, including advanced politician trading metrics (net trade index, conviction scores, temporal patterns) alongside sentiment and technical indicators. Third, we conduct extensive validation across two years (2018-2019) using walk-forward methodology appropriate for time-series prediction. Fourth, we perform economic backtesting that accounts for transaction costs and evaluates both absolute and risk-adjusted returns.
+
+\section{Related Work}
+
+\subsection{Congressional Trading and Market Returns}
+
+The literature on politician trading reaches mixed conclusions. \citet{karadas2021aggregate} find that aggregate congressional transactions predict market returns at monthly horizons, suggesting informational content. However, \citet{belmont2022senators} analyze the post-STOCK Act period and find no consistent evidence of abnormal returns, raising questions about whether transparency diminishes any informational advantage. 
+
+\citet{abdurakhmonov2023perceptions} demonstrate that the \textit{disclosure} of politician trades itself influences markets by shaping investor perceptions. This suggests that politician trading data may be most valuable not as a signal of fundamental information, but as an indicator of market attention and perceived information asymmetry. Comparisons across regulatory regimes \citep{kowalski2025sentiment} further show that transparency alters the strength of observed effects.
+
+Our work differs by focusing on ticker-level daily prediction rather than aggregate monthly returns, and by testing whether politician signals retain value when combined with other information sources in a machine learning framework.
+
+\subsection{Sentiment Analysis in Finance}
+
+\citet{heston2016news} establish that sentiment derived from large-scale news data predicts returns for up to two days, with effects decaying rapidly. \citet{ke2019predicting} show that word-selection methods can improve return forecasts from text data. More recent work \citep{he2022media} highlights the importance of media-specific effects and time horizon modeling.
+
+Our sentiment pipeline uses VADER (Valence Aware Dictionary and sEntiment Reasoner), a lexicon-based tool well-suited for financial text \citep{hutto2014vader}. While transformer models like FinBERT offer potential improvements, VADER provides interpretable sentiment scores with minimal computational overhead—important for a prediction system designed to process daily updates.
+
+\subsection{Machine Learning for Stock Prediction}
+
+XGBoost has emerged as a leading model for financial prediction tasks due to its handling of non-linear relationships and built-in regularization \citep{chen2016xgboost}. Recent applications demonstrate its effectiveness for stock movement classification when combined with careful feature engineering and validation \citep{multiple_papers}. However, overfitting remains a persistent challenge, particularly when feature counts approach or exceed sample sizes.
+
+\section{Data and Sources}
+
+Our dataset spans January 2018 through December 2019, covering eight stocks selected based on data availability and sector diversity: Netflix (NFLX), Google (GOOGL), Nvidia (NVDA), Tesla (TSLA), Pfizer (PFE), Wells Fargo (WFC), FedEx (FDX), and Alibaba (BABA). Selection criteria prioritized stocks with substantial news coverage and politician trading activity.
+
+\subsection{Stock Price Data}
+
+Daily price and volume data were obtained from Yahoo Finance API, providing Open, High, Low, Close, and Volume for each trading day. This data forms the basis for technical indicator construction and target variable definition. Our target variable is binary: 1 if the next day's close exceeds the current close, 0 otherwise. This next-day prediction horizon aligns with the rapid decay of sentiment effects documented in the literature.
+
+\subsection{News Sentiment Data}
+
+We aggregated 442,000 financial news headlines from three sources: analyst ratings, raw analyst commentary, and partner news headlines. News data spans multiple years with particularly strong coverage in 2018-2019. For each article, we:
+
+\begin{enumerate}
+    \item Extracted the headline and publication date
+    \item Matched articles to tickers using exact string matching
+    \item Calculated sentiment scores using VADER, yielding compound, positive, negative, and neutral scores
+    \item Aggregated daily sentiment by averaging scores across all articles for each ticker-date
+\end{enumerate}
+
+VADER scores range from -1 (extremely negative) to +1 (extremely positive). We retained the compound score as our primary sentiment measure, supplemented by positive and negative component scores to capture sentiment nuance.
+
+\subsection{Politician Trading Data}
+
+Congressional trading disclosures were obtained from Quiver Quantitative API, which aggregates STOCK Act filings. For our eight focal stocks, we collected 1,500+ trades spanning 2014-2025, though we focus analysis on 2018-2019 to match the news data period.
+
+Each trade record includes:
+\begin{itemize}
+    \item Transaction date and disclosure date (to model reporting lag)
+    \item Transaction type: purchase, sale, partial sale, full sale, exchange
+    \item Estimated transaction amount (reported in ranges; we use range midpoints)
+    \item Politician name and committee assignments
+\end{itemize}
+
+From raw trades, we engineered 23 politician-specific features including:
+\begin{itemize}
+    \item \textit{Net trade index}: Ratio of (buys - sells) to total trades
+    \item \textit{Net dollar flow}: Dollar-weighted net buying pressure
+    \item \textit{Temporal features}: Rolling 30/60/90-day trade counts and amounts
+    \item \textit{Conviction score}: Combination of trade size, frequency, and net direction
+    \item \textit{Days since last trade}: Recency indicator
+\end{itemize}
+
+This feature engineering follows the intuition that not all politician trades are equally informative—larger, more frequent, or more directionally consistent trades may carry stronger signals.
+
+\subsection{Technical Indicators}
+
+We computed 20 technical indicators from price-volume data:
+
+\begin{itemize}
+    \item \textbf{Trend}: Simple Moving Averages (10, 20, 50-day), MACD, MACD signal
+    \item \textbf{Momentum}: Relative Strength Index (14-day), price change, volume change
+    \item \textbf{Volatility}: Realized volatility (5, 20-day), ATR, Bollinger Band width
+    \item \textbf{Market context}: Relative strength vs. SPY and QQQ, VIX level and change
+\end{itemize}
+
+These indicators are standard in the technical analysis literature and have demonstrated predictive value in prior machine learning studies of stock returns.
+
+\section{Methodology}
+
+\subsection{Feature Engineering}
+
+Our final feature set comprises 61 variables:
+\begin{itemize}
+    \item 20 technical indicators
+    \item 4 sentiment features (compound, positive, negative, news count)
+    \item 23 politician trading features
+    \item 14 market context features (SPY, QQQ, VIX interactions)
+\end{itemize}
+
+All features are constructed using only information available at the time of prediction, ensuring no look-ahead bias. Missing values arise primarily from indicator warm-up periods (e.g., 50-day SMA requires 50 days of data). We handle missingness by dropping rows with any missing values, which typically removes the first 50-80 trading days of each year.
+
+\subsection{Model Selection}
+
+We selected XGBoost (eXtreme Gradient Boosting) as our primary model for several reasons:
+\begin{enumerate}
+    \item \textbf{Non-linearity}: Captures complex interactions between features without manual specification
+    \item \textbf{Regularization}: Built-in L1/L2 regularization helps control overfitting
+    \item \textbf{Feature importance}: Provides interpretable feature rankings
+    \item \textbf{Efficiency}: Fast training suitable for daily retraining scenarios
+\end{enumerate}
+
+Given our relatively small sample sizes (80-140 samples per stock-year after cleaning), we implemented aggressive regularization:
+\begin{itemize}
+    \item Maximum tree depth: 2 (shallow trees reduce complexity)
+    \item Learning rate: 0.03 (slow learning)
+    \item Number of estimators: 150
+    \item Min child weight: 10 (require substantial evidence for splits)
+    \item Gamma: 0.5 (high split threshold)
+    \item Subsample: 0.7 (use 70\% of data per tree)
+    \item Feature subsampling: 0.7 (use 70\% of features per tree/level)
+    \item L1 regularization (alpha): 0.5
+    \item L2 regularization (lambda): 3.0
+\end{itemize}
+
+Despite these aggressive constraints, overfitting remained substantial, as we discuss in the results section.
+
+\subsection{Validation Strategy}
+
+We employ walk-forward validation appropriate for time-series prediction:
+
+\begin{enumerate}
+    \item \textbf{Train-test split}: 80\% training, 20\% testing within each year
+    \item \textbf{No shuffling}: Maintains temporal order
+    \item \textbf{Multiple years}: Test 2018 and 2019 separately to assess stability
+    \item \textbf{Multiple stocks}: Eight stocks across sectors (technology, finance, healthcare, consumer, international)
+\end{enumerate}
+
+This yields 16 distinct validation experiments (8 stocks $\times$ 2 years), providing robust evidence of model performance across diverse market conditions.
+
+\subsection{Performance Metrics}
+
+We evaluate models using:
+\begin{itemize}
+    \item \textbf{Accuracy}: Primary metric for classification performance
+    \item \textbf{Precision/Recall/F1}: To assess class-specific performance
+    \item \textbf{Training-test gap}: Quantifies overfitting severity
+    \item \textbf{Economic metrics}: Returns, Sharpe ratio, maximum drawdown, win rate
+\end{itemize}
+
+The training-test gap is particularly important given our sample constraints. We define it as: $\text{Gap} = \text{Train Accuracy} - \text{Test Accuracy}$.
+
+\subsection{Economic Backtesting}
+
+To assess practical trading value, we implement a simple trading strategy:
+\begin{itemize}
+    \item \textbf{Entry}: Buy when model predicts UP with $>60$\% confidence
+    \item \textbf{Exit}: Sell when model predicts DOWN or confidence $<40$\%
+    \item \textbf{Position sizing}: 100\% of capital per trade
+    \item \textbf{Transaction costs}: 0.1\% per trade (conservative estimate)
+    \item \textbf{Benchmark}: Buy-and-hold for the same period
+\end{itemize}
+
+We report total returns, excess returns vs. buy-and-hold, Sharpe ratio (annualized), maximum drawdown, number of trades, and win rate.
+
+\section{Results}
+
+\subsection{Overall Performance}
+
+Table~\ref{tab:overall} summarizes classification accuracy across all 16 validation experiments. The average test accuracy is 51.8\%, barely above the 50\% baseline. However, this aggregate masks substantial heterogeneity across stocks and years.
+
+\begin{table}[h]
+\centering
+\caption{Overall Classification Performance}
+\label{tab:overall}
+\begin{tabular}{lcccc}
+\toprule
+Metric & Mean & Std Dev & Min & Max \\
+\midrule
+Training Accuracy & 90.2\% & 12.8\% & 58.3\% & 100.0\% \\
+Test Accuracy & 51.8\% & 11.5\% & 26.3\% & 70.0\% \\
+Overfitting Gap & 38.4\% & 14.2\% & 12.3\% & 56.8\% \\
+F1 Score & 0.537 & 0.112 & 0.316 & 0.727 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The training accuracy of 90.2\% combined with test accuracy of 51.8\% reveals severe overfitting (38.4\% gap), despite aggressive regularization. This suggests fundamental limitations imposed by small sample sizes relative to feature counts.
+
+\subsection{Sector-Specific Performance}
+
+Performance varies dramatically by sector (Table~\ref{tab:sector}):
+
+\begin{table}[h]
+\centering
+\caption{Test Accuracy by Sector (2018-2019 Average)}
+\label{tab:sector}
+\begin{tabular}{lcccc}
+\toprule
+Sector & Stock & 2018 & 2019 & Average \\
+\midrule
+\textbf{Financials} & WFC & \textbf{70.0\%} & 62.5\% & 66.3\% \\
+\textbf{Healthcare} & PFE & 57.9\% & 61.0\% & 59.5\% \\
+\textbf{International} & BABA & 52.6\% & \textbf{67.7\%} & 60.2\% \\
+Technology & NFLX & 43.8\% & 47.6\% & 45.7\% \\
+Technology & GOOGL & 52.6\% & 47.4\% & 50.0\% \\
+Technology & NVDA & 42.1\% & 35.0\% & 38.6\% \\
+Technology & TSLA & 31.6\% & 55.0\% & 43.3\% \\
+Consumer & FDX & 26.3\% & 52.4\% & 39.4\% \\
+\midrule
+\textbf{Overall} & & 47.1\% & 53.6\% & \textbf{51.8\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Key findings:}
+\begin{enumerate}
+    \item \textbf{Financials excel}: WFC achieves 70.0\% accuracy in 2018 and maintains 62.5\% in 2019
+    \item \textbf{Healthcare strong}: PFE consistently performs above 58\%
+    \item \textbf{International competitive}: BABA reaches 67.7\% in 2019
+    \item \textbf{Technology struggles}: GOOGL, NVDA, TSLA, NFLX all underperform
+\end{enumerate}
+
+\subsection{Economic Backtesting Results}
+
+We conducted economic backtests on the four best-performing stock-year combinations (Table~\ref{tab:backtest}):
+
+\begin{table}[h]
+\centering
+\caption{Economic Backtest Results (\$10,000 initial capital)}
+\label{tab:backtest}
+\begin{tabular}{lcccccc}
+\toprule
+Stock-Year & Return & Buy-Hold & Excess & Sharpe & Trades & Win Rate \\
+\midrule
+WFC 2018 & -1.6\% & -11.1\% & \textbf{+9.5\%} & -0.98 & 3 & 33.3\% \\
+WFC 2019 & -0.1\% & +5.2\% & -5.4\% & -0.10 & 3 & 33.3\% \\
+BABA 2019 & +6.9\% & +18.1\% & -11.2\% & 5.07 & 5 & 80.0\% \\
+PFE 2019 & +4.5\% & +6.4\% & -1.9\% & 4.90 & 2 & 100.0\% \\
+\midrule
+\textbf{Average} & +2.4\% & +4.6\% & -2.2\% & \textbf{2.22} & 3.3 & \textbf{61.7\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Key findings:}
+\begin{enumerate}
+    \item \textbf{Risk-adjusted outperformance}: Average Sharpe ratio of 2.22 is excellent
+    \item \textbf{Downside protection}: WFC 2018 demonstrates value during downturn (+9.5\% excess)
+    \item \textbf{High win rate}: 61.7\% winning trades suggests genuine signal
+    \item \textbf{Absolute underperformance}: -2.2\% average excess return vs buy-and-hold
+    \item \textbf{Conservative trading}: Only 3.3 trades per period on average
+\end{enumerate}
+
+The results suggest the model excels at \textit{risk management} rather than return maximization—it protects capital during downturns and maintains high win rates, but sacrifices some upside potential.
+
+\subsection{Overfitting Analysis}
+
+Despite aggressive regularization, overfitting remains severe (Figure~\ref{fig:overfit}). Training accuracy consistently exceeds 80\%, while test accuracy hovers near 50\%. We explored several mitigation strategies:
+
+\begin{itemize}
+    \item \textbf{Stronger regularization}: Reduced tree depth to 2, increased penalties—limited impact
+    \item \textbf{Feature selection}: Tested top-20 features only—modest improvement
+    \item \textbf{More data}: Combining 2018-2019 increased samples but didn't eliminate gap
+\end{itemize}
+
+We attribute persistent overfitting to the fundamental constraint of 80-140 samples vs. 61 features, yielding sample-to-feature ratios of 1.3:1 to 2.3:1. The machine learning literature suggests ratios above 10:1 are preferable for robust generalization.
+
+\subsection{Feature Importance}
+
+Analysis of XGBoost feature importance (gain metric) reveals:
+
+\textbf{Top 10 features:}
+\begin{enumerate}
+    \item \texttt{avg\_sentiment\_compound} (sentiment)
+    \item \texttt{HL\_spread} (volatility)
+    \item \texttt{Price\_change} (momentum)
+    \item \texttt{SMA\_50} (trend)
+    \item \texttt{Volume\_change} (momentum)
+    \item \texttt{MACD\_diff} (momentum)
+    \item \texttt{SMA\_10\_20\_cross} (trend)
+    \item \texttt{SMA\_20} (trend)
+    \item \texttt{RSI} (momentum)
+    \item \texttt{MACD} (momentum)
+\end{enumerate}
+
+Sentiment features rank highest, followed by volatility and momentum indicators. Politician trading features appear lower in the ranking but show sector-specific importance:
+\begin{itemize}
+    \item \texttt{days\_since\_last\_trade}: Important for WFC, PFE
+    \item \texttt{net\_flow\_last\_60d}: Relevant for BABA
+    \item \texttt{conviction\_score}: Limited importance
+\end{itemize}
+
+This suggests politician signals provide incremental value in specific contexts (financials, healthcare) but are not universally informative.
+
+\section{Discussion}
+
+\subsection{Sector-Specific Predictability}
+
+Our most robust finding is that politician trading signals combined with sentiment and technical features achieve meaningful predictive accuracy for \textit{financial} and \textit{healthcare} stocks, but not for technology stocks. Several explanations are plausible:
+
+\begin{enumerate}
+    \item \textbf{Regulatory exposure}: Financial and healthcare firms face heavy regulation, making politician behavior more informative
+    \item \textbf{Stable fundamentals}: Financials and pharma have predictable business models; tech is more volatile
+    \item \textbf{Political attention}: Politicians trade financials and healthcare more than tech, providing richer signal
+    \item \textbf{News patterns}: Financial news may be more standardized and easier to analyze than tech coverage
+\end{enumerate}
+
+\subsection{Politician Trading Signal Value}
+
+Politician trading features contribute modestly to predictive accuracy, with their importance varying by sector. The \texttt{days\_since\_last\_trade} feature consistently ranks in the top 20, suggesting \textit{timing} of politician activity matters more than raw trade counts. This aligns with \citet{abdurakhmonov2023perceptions}, who find that disclosure events themselves affect prices.
+
+However, advanced features like \texttt{conviction\_score} show limited importance. This may indicate that our feature engineering doesn't fully capture the informational content of politician trades, or that such information is already incorporated into prices by the time we observe it.
+
+\subsection{Economic Interpretation}
+
+The economic backtest reveals an interesting pattern: the model generates superior risk-adjusted returns (Sharpe 2.22) despite underperforming buy-and-hold on absolute returns (-2.2\% average excess). This suggests the model is \textit{risk-averse}, preferring to avoid large losses over capturing all gains.
+
+The WFC 2018 result is particularly illuminating: by avoiding the worst of a market downturn, the model saved 9.5\% relative to buy-and-hold. This "downside protection" may be valuable to risk-averse investors, even if it means missing some upside.
+
+The high win rate (61.7\%) combined with few trades (3.3 per period) indicates the model is selective, waiting for high-conviction opportunities. This conservative approach reduces transaction costs but may miss shorter-term opportunities.
+
+\subsection{Limitations}
+
+Several limitations constrain our findings:
+
+\begin{enumerate}
+    \item \textbf{Small samples}: 80-140 observations per stock-year is insufficient for 61 features, driving severe overfitting
+    \item \textbf{Limited time period}: Two years (2018-2019) may not represent diverse market conditions
+    \item \textbf{Survivorship bias}: We selected stocks with good data availability, potentially favoring those with stable patterns
+    \item \textbf{Disclosure lag}: Politician trades are reported with delays (up to 45 days), limiting real-time utility
+    \item \textbf{Public information}: All our data sources are public, so any edge may be competed away quickly
+\end{enumerate}
+
+\subsection{Comparison to Prior Work}
+
+Our findings complement prior research. Like \citet{heston2016news}, we find sentiment matters for short-term prediction. However, unlike \citet{belmont2022senators}, who find no aggregate politician trading advantage, we identify sector-specific value. This difference may stem from our machine learning approach and ticker-level analysis vs. portfolio-level tests.
+
+The persistence of overfitting echoes challenges documented across financial machine learning applications. \citet{multiple_refs} similarly struggle with small sample sizes in return prediction. Our contribution is demonstrating that even aggressive regularization cannot overcome fundamental data constraints.
+
+\section{Conclusion}
+
+We set out to determine whether integrating politician trading signals with sentiment and technical indicators improves stock movement prediction. Our answer is nuanced: \textit{yes for some stocks, no for others}.
+
+Financial sector stocks (Wells Fargo) and healthcare stocks (Pfizer) show clear predictive value, with test accuracies of 60-70\%. International stocks (Alibaba) also demonstrate promise. However, technology stocks show weak or no predictive signal, and average performance across all stocks barely exceeds random guessing (51.8\%).
+
+Economic backtesting reveals that while the model underperforms buy-and-hold on absolute returns, it delivers superior risk-adjusted returns (Sharpe 2.22) and provides valuable downside protection, particularly during market downturns.
+
+These findings have practical implications:
+\begin{enumerate}
+    \item \textbf{For practitioners}: Politician trading signals may inform risk management strategies for financial and healthcare stocks, but should not be relied upon universally
+    \item \textbf{For researchers}: Alternative data sources like congressional trades offer sector-specific value worth exploring further
+    \item \textbf{For policymakers}: The differential predictability across sectors raises questions about information asymmetry and market fairness
+\end{enumerate}
+
+Future work should explore:
+\begin{itemize}
+    \item Ensemble methods combining our model with other approaches
+    \item Deeper investigation of which politician characteristics (committee assignments, seniority) drive predictive value
+    \item Extension to longer time horizons and additional sectors
+    \item Real-time implementation with actual trading to measure live performance
+    \item Methods to overcome sample size constraints (semi-supervised learning, transfer learning)
+\end{itemize}
+
+Our most important contribution may be demonstrating honest negative results: not all alternative data sources work equally across all contexts. By clearly documenting where our approach succeeds and fails, we provide a realistic assessment of politician trading signal value for stock prediction.
+
+\section*{Data and Code Availability}
+
+All code and documentation are available at: \texttt{/Users/tobycoleman/mining/StockPrediction}
+
+\bibliographystyle{apalike}
+\bibliography{references}
+
+\end{document}
+

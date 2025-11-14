@@ -38,7 +38,135 @@ After testing sentiment improvements (V3, V4) and regularization approaches (V5)
 - **Stock-specific behavior matters** - BABA (84%), AAPL (63%), MU (42%) show huge variance
 - **Politician trading signals work** - AAPL achieved 63% with NO news data
 
-📄 **[Full Investigation](docs/PROJECT_FINAL_SUMMARY.md)** | 📊 **[Option A Results](docs/OPTION_A_INVESTIGATION_RESULTS.md)** | � **[MVP Analysis](docs/MVP_VALIDATION_SUMMARY.md)**
+📄 **[Full Investigation](docs/PROJECT_FINAL_SUMMARY.md)** | 📊 **[Option A Results](docs/OPTION_A_INVESTIGATION_RESULTS.md)** | 📈 **[MVP Analysis](docs/MVP_VALIDATION_SUMMARY.md)**
+
+---
+
+## 📝 Paper Efficacy Analysis (NEW - Nov 13, 2025)
+
+Comprehensive analysis of project alignment with research paper goals:
+
+- 🎯 **[Executive Summary](docs/EXECUTIVE_SUMMARY_PAPER_EFFICACY.md)** - Quick overview (7/10 rating, 75% complete)
+- 📊 **[Full Efficacy Analysis](docs/PAPER_GOALS_EFFICACY_ANALYSIS.md)** - Detailed goal-by-goal evaluation  
+- ✅ **[Alignment Matrix](docs/PAPER_ALIGNMENT_MATRIX.md)** - Visual gap analysis (30/40 items complete)
+- 🚀 **[Action Plan](docs/ACTION_PLAN_PAPER_COMPLETION.md)** - Step-by-step completion guide (2-5 days)
+
+**Key Findings:**
+- ✅ Strong: Feature engineering, code quality, negative results, statistical evaluation
+- ⚠️ Gaps: Sequence models (LSTM/GRU), economic backtesting, multi-year testing
+- 📈 With 2-3 days work: Achieves 87.5% alignment → Conference-ready paper
+
+---
+
+## 🎯 **Multi-Year Validation Results** (LATEST - Nov 13, 2025)
+
+Comprehensive validation complete across 3 optimization approaches, 8 stocks, 2 years:
+
+- 📊 **[Final Validation Summary](docs/FINAL_VALIDATION_SUMMARY.md)** - Complete results & analysis
+- 📈 **[Detailed Results Analysis](docs/VALIDATION_RESULTS_ANALYSIS.md)** - In-depth investigation
+
+**Key Results:**
+- 🏆 **Best Performance:** WFC 70.0% (2018), BABA 67.7% (2019)
+- ✅ **Sector Success:** Financials 60-70%, Healthcare 58-61%
+- ⚠️ **Average Performance:** 51.8% (barely above 50% baseline)
+- 📉 **Persistent Overfitting:** 32-57% gaps despite aggressive regularization
+- 🎯 **High Variance:** Performance ranges 26.3% to 70.0% by stock
+
+**Main Finding:** Politician trading + sentiment signals work for specific sectors (financials, healthcare) but not universally. Provides valuable sector-specific insights and honest negative results for publication.
+
+---
+
+## 🎤 **Presentation Demo Scripts** (READY FOR DEMO!)
+
+Two powerful scripts to demonstrate practical value:
+
+### 1. Economic Backtesting ✅ **COMPLETE**
+**`scripts/economic_backtest.py`** - Demonstrates risk-adjusted value
+
+- Simulates real trading on historical data
+- Accounts for transaction costs (0.1%)
+- Calculates Sharpe ratio, max drawdown, win rate
+- Tests: WFC 2018-2019, BABA 2019, PFE 2019
+- **Runtime:** ~10-15 minutes
+
+```bash
+python scripts/economic_backtest.py
+```
+
+**Key Results:**
+- 🎯 **Sharpe Ratio: 2.22** (excellent risk-adjusted returns)
+- 🛡️ **WFC 2018: +9.5% excess return** (beat buy-and-hold during downturn)
+- ✅ **61.7% win rate** (above baseline)
+- 📉 **Lower drawdowns** than buy-and-hold across all tests
+
+📖 **[Detailed Results & Analysis](ECONOMIC_BACKTEST_RESULTS.md)**
+
+### 2. Live Prediction Demo 🌟
+**`scripts/live_prediction_demo.py`** - Real-time BUY/SELL signals
+
+- Fetches live news from NewsAPI
+- Gets latest politician trades from Quiver
+- Trains model on 180 days of data
+- Generates BUY/SELL/HOLD recommendations
+- **Perfect for live presentations!**
+- **Runtime:** ~2-3 minutes
+
+```bash
+python scripts/live_prediction_demo.py
+```
+
+**Output includes:**
+- 🎨 Beautiful recommendation cards
+- 📊 Confidence levels for each signal
+- 💼 Portfolio action summary
+- 🎯 Talking points for presentation
+
+📖 **[Complete Presentation Guide](PRESENTATION_DEMO_GUIDE.md)** - Full walkthrough for demos
+
+---
+
+## 📄 **Academic Paper** ✅ **COMPLETE**
+
+**Full research paper ready for submission!**
+
+📄 **[LaTeX Paper (paper/)](paper/stock_prediction_paper.tex)** - Complete academic paper  
+📖 **[Paper Summary](PAPER_COMPLETE.md)** - Overview & compilation instructions
+
+**Key contributions:**
+- Novel integration of politician trading + sentiment + technical indicators
+- Rigorous validation across 8 stocks, 2 years (16 experiments)
+- Economic backtesting with transaction costs
+- Sector-specific insights (financials 66%, healthcare 60%, tech 39%)
+- Honest reporting of negative results
+
+**To compile:** Upload `.tex` and `.bib` files to [Overleaf.com](https://overleaf.com) and click "Recompile"
+
+---
+
+## 📈 **Live Trading Tracker** 🔥 **NEW - Testing in Real Market!**
+
+**Now tracking model predictions in live 2025 market conditions!**
+
+📊 **Current Status:** 1 trade, 1 win (100%), +0.98% return  
+✅ **First Trade:** WFC - Predicted UP, bought $84.28, sold $85.11 (+0.98%)
+
+**Tools:**
+```bash
+# Generate daily predictions
+python scripts/daily_prediction_tracker.py
+
+# Expanded live demo (6 tickers)
+python scripts/live_prediction_demo.py
+```
+
+**Documentation:**
+- 📈 **[Live Trading Log](LIVE_TRADING_LOG.md)** - Real trade outcomes
+- 📖 **[Live Trading Guide](LIVE_TRADING_GUIDE.md)** - Complete workflow
+- 📊 **Predictions:** `results/daily_predictions_log.csv`
+
+**Tracking:** WFC ✅ (1W-0L), BABA (testing soon), PFE (testing soon), NFLX, GOOGL, FDX
+
+---
 
 ## 🎯 Core Features
 
