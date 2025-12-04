@@ -11,10 +11,12 @@ from ta.momentum import RSIIndicator
 
 def create_features(df: pd.DataFrame, 
                    sentiment_df: pd.DataFrame = None,
-                   politician_df: pd.DataFrame = None) -> tuple:
+                   politician_df: pd.DataFrame = None,
+                   ticker: str = None,
+                   add_market_features: bool = True) -> tuple:
     """
-    Create features from stock data, including technical indicators.
-    Optionally merge in sentiment and politician trade data.
+    Create features from stock data, including technical indicators, volatility,
+    and market context. Optionally merge in sentiment and politician trade data.
     
     Parameters:
     -----------
@@ -24,19 +26,28 @@ def create_features(df: pd.DataFrame,
         Daily sentiment scores from news
     politician_df : pd.DataFrame, optional
         Politician trading data
+    ticker : str, optional
+        Stock ticker symbol (needed for sector-specific features)
+    add_market_features : bool, default=True
+        Whether to add market context features (SPY, VIX, sector ETFs)
     
     Returns:
     --------
-    tuple: (X, y)
+    tuple: (X, y, dates)
         X: Feature DataFrame
         y: Target variable (1 if next day close > today's close, 0 otherwise)
+        dates: Date column for reference
     """
     # Make a copy to avoid modifying the original
     features_df = df.copy()
     
-    # Ensure Date column is datetime
+    # Ensure Date column is datetime and timezone-naive
     if 'Date' in features_df.columns:
         features_df['Date'] = pd.to_datetime(features_df['Date'])
+        # Remove timezone if present and normalize to midnight
+        if hasattr(features_df['Date'].dtype, 'tz') and features_df['Date'].dtype.tz is not None:
+            features_df['Date'] = features_df['Date'].dt.tz_localize(None)
+        features_df['Date'] = features_df['Date'].dt.normalize()
         features_df = features_df.sort_values('Date').reset_index(drop=True)
     
     # === TECHNICAL INDICATORS ===
@@ -74,6 +85,122 @@ def create_features(df: pd.DataFrame,
     features_df['SMA_10_20_cross'] = (features_df['SMA_10'] - features_df['SMA_20']) / features_df['Close']
     features_df['SMA_20_50_cross'] = (features_df['SMA_20'] - features_df['SMA_50']) / features_df['Close']
     
+    # === VOLATILITY FEATURES ===
+    print("Creating volatility features...")
+    
+    # Realized volatility (standard deviation of returns)
+    features_df['realized_vol_5d'] = features_df['Price_change'].rolling(5).std()
+    features_df['realized_vol_20d'] = features_df['Price_change'].rolling(20).std()
+    
+    # Average True Range (ATR) - measure of volatility
+    high_low = features_df['High'] - features_df['Low']
+    high_close = abs(features_df['High'] - features_df['Close'].shift(1))
+    low_close = abs(features_df['Low'] - features_df['Close'].shift(1))
+    true_range = pd.concat([high_low, high_close, low_close], axis=1).max(axis=1)
+    features_df['ATR_14'] = true_range.rolling(14).mean()
+    
+    # Normalized ATR (ATR / Price)
+    features_df['ATR_pct'] = features_df['ATR_14'] / features_df['Close']
+    
+    # Bollinger Band width (measure of volatility expansion/contraction)
+    sma_20 = features_df['SMA_20']
+    std_20 = features_df['Close'].rolling(20).std()
+    features_df['BB_width'] = (2 * std_20) / sma_20
+    
+    # Volatility percentile (current volatility vs historical)
+    # Note: needs 252 days of history, so will have NaN for first year
+    features_df['vol_percentile'] = features_df['realized_vol_20d'].rolling(252, min_periods=60).rank(pct=True)
+    
+    # Volatility regime change (is volatility expanding?)
+    features_df['vol_expanding'] = (features_df['realized_vol_5d'] > features_df['realized_vol_20d']).astype(int)
+    
+    # === MARKET CONTEXT FEATURES ===
+    if add_market_features and 'Date' in features_df.columns:
+        print("Creating market context features...")
+        
+        try:
+            from market_data_loader import (
+                fetch_all_market_indicators, 
+                fetch_sector_etfs, 
+                get_stock_sector
+            )
+            
+            # Get date range for market data
+            start_date = features_df['Date'].min().strftime('%Y-%m-%d')
+            end_date = features_df['Date'].max().strftime('%Y-%m-%d')
+            
+            # Fetch market indicators (SPY, QQQ, VIX)
+            market_data = fetch_all_market_indicators(start_date, end_date, use_cache=True)
+            
+            # Add SPY (S&P 500) features
+            if 'SPY' in market_data:
+                spy_df = market_data['SPY'][['Date', 'Close']].copy()
+                # Ensure Date is timezone-naive
+                spy_df['Date'] = pd.to_datetime(spy_df['Date']).dt.tz_localize(None).dt.normalize()
+                spy_df['SPY_return'] = spy_df['Close'].pct_change()
+                spy_df['SPY_return_5d'] = spy_df['Close'].pct_change(5)
+                spy_df['SPY_return_20d'] = spy_df['Close'].pct_change(20)
+                spy_df = spy_df[['Date', 'SPY_return', 'SPY_return_5d', 'SPY_return_20d']]
+                features_df = features_df.merge(spy_df, on='Date', how='left')
+                
+                # Relative strength vs SPY
+                features_df['rel_strength_spy'] = features_df['Price_change'] - features_df['SPY_return']
+                print("      [OK] Added SPY market features")
+            
+            # Add QQQ (NASDAQ) features
+            if 'QQQ' in market_data:
+                qqq_df = market_data['QQQ'][['Date', 'Close']].copy()
+                # Ensure Date is timezone-naive
+                qqq_df['Date'] = pd.to_datetime(qqq_df['Date']).dt.tz_localize(None).dt.normalize()
+                qqq_df['QQQ_return'] = qqq_df['Close'].pct_change()
+                qqq_df = qqq_df[['Date', 'QQQ_return']]
+                features_df = features_df.merge(qqq_df, on='Date', how='left')
+                print("      [OK] Added QQQ market features")
+            
+            # Add VIX (volatility index) features
+            if '^VIX' in market_data:
+                vix_df = market_data['^VIX'][['Date', 'Close']].copy()
+                # Ensure Date is timezone-naive
+                vix_df['Date'] = pd.to_datetime(vix_df['Date']).dt.tz_localize(None).dt.normalize()
+                vix_df.columns = ['Date', 'VIX']
+                vix_df['VIX_change'] = vix_df['VIX'].pct_change()
+                vix_df['VIX_percentile'] = vix_df['VIX'].rolling(252, min_periods=60).rank(pct=True)
+                features_df = features_df.merge(vix_df, on='Date', how='left')
+                print("      [OK] Added VIX volatility features")
+            
+            # Add sector features if ticker is provided
+            if ticker:
+                sector_etf = get_stock_sector(ticker)
+                if sector_etf:
+                    sector_data = fetch_sector_etfs(start_date, end_date, use_cache=True)
+                    
+                    if sector_etf in sector_data:
+                        sector_df = sector_data[sector_etf][['Date', 'Close']].copy()
+                        # Ensure Date is timezone-naive
+                        sector_df['Date'] = pd.to_datetime(sector_df['Date']).dt.tz_localize(None).dt.normalize()
+                        sector_df['sector_return'] = sector_df['Close'].pct_change()
+                        sector_df['sector_return_5d'] = sector_df['Close'].pct_change(5)
+                        sector_df = sector_df[['Date', 'sector_return', 'sector_return_5d']]
+                        features_df = features_df.merge(sector_df, on='Date', how='left')
+                        
+                        # Relative strength vs sector
+                        features_df['rel_strength_sector'] = features_df['Price_change'] - features_df['sector_return']
+                        print(f"      [OK] Added {sector_etf} sector features")
+                    
+                    # Calculate rolling beta to market (if we have SPY)
+                    if 'SPY_return' in features_df.columns:
+                        # Beta = Cov(stock, market) / Var(market)
+                        rolling_cov = features_df['Price_change'].rolling(60).cov(features_df['SPY_return'])
+                        rolling_var = features_df['SPY_return'].rolling(60).var()
+                        features_df['beta_60d'] = rolling_cov / rolling_var
+                        
+                        # Correlation to market
+                        features_df['corr_spy_60d'] = features_df['Price_change'].rolling(60).corr(features_df['SPY_return'])
+                        print("      [OK] Added beta and correlation features")
+        
+        except Exception as e:
+            print(f"      [WARN]  Could not add market features: {e}")
+    
     # === MERGE SENTIMENT DATA (if provided) ===
     if sentiment_df is not None and not sentiment_df.empty:
         print("Merging sentiment data...")
@@ -83,6 +210,16 @@ def create_features(df: pd.DataFrame,
             if 'date' in sentiment_df.columns:
                 sentiment_df = sentiment_df.rename(columns={'date': 'Date'})
             sentiment_df['Date'] = pd.to_datetime(sentiment_df['Date'])
+            
+            # Remove timezone info to avoid merge conflicts
+            if hasattr(features_df['Date'].dtype, 'tz') and features_df['Date'].dtype.tz is not None:
+                features_df['Date'] = features_df['Date'].dt.tz_localize(None)
+            if hasattr(sentiment_df['Date'].dtype, 'tz') and sentiment_df['Date'].dtype.tz is not None:
+                sentiment_df['Date'] = sentiment_df['Date'].dt.tz_localize(None)
+            
+            # Normalize to date only (remove time component)
+            features_df['Date'] = features_df['Date'].dt.normalize()
+            sentiment_df['Date'] = sentiment_df['Date'].dt.normalize()
         else:
             merge_key = 'date'
         
@@ -107,6 +244,10 @@ def create_features(df: pd.DataFrame,
         # Count number of buys and sells per day
         politician_df['date'] = pd.to_datetime(politician_df['date'])
         
+        # Remove timezone info to avoid merge conflicts
+        if hasattr(politician_df['date'].dtype, 'tz') and politician_df['date'].dtype.tz is not None:
+            politician_df['date'] = politician_df['date'].dt.tz_localize(None)
+        
         # Create buy/sell indicators
         politician_agg = politician_df.groupby('date').agg({
             'transaction_type': lambda x: sum(x.str.lower().str.contains('buy', na=False)),
@@ -114,6 +255,11 @@ def create_features(df: pd.DataFrame,
         }).reset_index()
         
         politician_agg.columns = ['Date', 'politician_buy_count', 'politician_trade_amount']
+        
+        # Ensure Date column in features_df is also timezone-naive
+        if 'Date' in features_df.columns:
+            if hasattr(features_df['Date'].dtype, 'tz') and features_df['Date'].dtype.tz is not None:
+                features_df['Date'] = features_df['Date'].dt.tz_localize(None)
         
         # Merge with features
         features_df = features_df.merge(
@@ -125,6 +271,31 @@ def create_features(df: pd.DataFrame,
         # Fill missing values with 0 (no trades)
         features_df['politician_buy_count'] = features_df['politician_buy_count'].fillna(0)
         features_df['politician_trade_amount'] = features_df['politician_trade_amount'].fillna(0)
+        
+        # === ADVANCED POLITICIAN FEATURES ===
+        print("Creating advanced politician features...")
+        try:
+            from advanced_politician_features import create_advanced_politician_features
+            
+            # Create advanced features aligned with our date index
+            # Pass features_df as stock_df (it has the Date column)
+            adv_features = create_advanced_politician_features(
+                features_df[['Date']] if 'Date' in features_df.columns else features_df,
+                politician_df
+            )
+            
+            # Merge advanced features
+            if not adv_features.empty:
+                # Merge on Date
+                if 'Date' in adv_features.columns and 'Date' in features_df.columns:
+                    features_df = features_df.merge(adv_features, on='Date', how='left')
+                else:
+                    features_df = pd.concat([features_df, adv_features], axis=1)
+                print(f"      [OK] Added {len(adv_features.columns)-1 if 'Date' in adv_features.columns else len(adv_features.columns)} advanced politician features")
+            else:
+                print("      [WARN]  No advanced features generated (insufficient data)")
+        except Exception as e:
+            print(f"      [WARN]  Could not create advanced features: {e}")
     else:
         print("No politician trade data provided - skipping politician features")
     

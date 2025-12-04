@@ -1,217 +1,225 @@
-# Stock Movement Prediction with News Sentiment and Politician Position Signals
+# Stock Movement Prediction with News Sentiment and Politician Trading Signals
 
-A machine learning project to predict daily stock price movements using technical indicators, news sentiment analysis, and politician trading signals.
+A machine learning project investigating whether congressional trading signals combined with news sentiment and technical indicators can improve daily stock price prediction.
 
-## 📊 Project Overview
+## Research Question
 
-**Goal:** Build a predictive model for daily stock direction that answers the research question:
+> Does incorporating politician-trade signals into a prediction pipeline (alongside technical indicators and news sentiment) improve daily stock direction prediction and yield incremental economic value?
 
-> Does incorporating politician-trade signals into a prediction pipeline (alongside technical indicators and news sentiment) improve daily stock direction prediction and yield incremental economic value in a simple backtest?
+---
 
-## 🎯 Core Features
+## Key Results
 
-1. **Technical Indicators**
-   - Simple Moving Averages (SMA): 10, 20, 50-day
-   - Relative Strength Index (RSI): 14-day
-   - Moving Average Convergence Divergence (MACD)
-   - Price and volume momentum features
+### Prediction Accuracy
 
-2. **News Sentiment Analysis**
-   - VADER sentiment scoring
-   - Daily aggregated sentiment scores
-   - Integration with news APIs
+| Sector | Stock | 2018 | 2019 | Average |
+|--------|-------|------|------|---------|
+| **Financials** | WFC | **70.0%** | 62.5% | 66.3% |
+| **Healthcare** | PFE | 57.9% | 61.0% | 59.5% |
+| **International** | BABA | 52.6% | **67.7%** | 60.2% |
+| Technology | NFLX | 43.8% | 47.6% | 45.7% |
+| Technology | GOOGL | 52.6% | 47.4% | 50.0% |
+| Technology | NVDA | 42.1% | 35.0% | 38.6% |
+| **Overall** | | 47.1% | 53.6% | **51.8%** |
 
-3. **Politician Trading Signals**
-   - Congressional trading data
-   - Buy/sell frequency and volume
-   - Trading activity indicators
+### Economic Performance
 
-## 📁 Project Structure
+| Metric | Value |
+|--------|-------|
+| Average Sharpe Ratio | **2.22** (excellent) |
+| Best Excess Return | +9.5% (WFC 2018 vs buy-and-hold) |
+| Average Win Rate | 61.7% |
+
+**Key Finding:** Politician trading signals provide value for **financial and healthcare sectors**, but limited utility for technology stocks.
+
+---
+
+## Features
+
+### Data Sources
+- **Stock Prices**: Yahoo Finance (OHLCV data)
+- **News Sentiment**: 442,000 financial articles with VADER scoring
+- **Politician Trades**: Congressional STOCK Act disclosures via Quiver Quantitative
+
+### Feature Engineering (61 features)
+- **Technical Indicators** (20): SMA, RSI, MACD, Bollinger Bands, volatility
+- **Sentiment Features** (4): Compound, positive, negative scores, article count
+- **Politician Signals** (23): Net trade index, conviction score, temporal patterns
+- **Market Context** (14): SPY, QQQ, VIX relative strength
+
+### Model
+- **XGBoost** with aggressive regularization
+- Walk-forward validation (80/20 train/test split)
+- Multi-year testing (2018-2019)
+
+---
+
+## Project Structure
 
 ```
 StockPrediction/
-├── src/
-│   ├── __init__.py              # Package initialization
-│   ├── data_loader.py           # Data fetching functions
-│   ├── feature_engineering.py   # Feature creation and processing
-│   └── model.py                 # Model training and evaluation
-├── notebooks/
-│   └── 01_baseline_model.ipynb  # Baseline model with technical indicators
-├── data/                        # Data storage (gitignored)
-├── tests/                       # Unit tests
-├── requirements.txt             # Python dependencies
-└── README.md                    # This file
+├── src/                        # Core source code
+│   ├── data_loader.py          # Data fetching (stocks, news, trades)
+│   ├── feature_engineering.py  # 61 feature creation
+│   ├── model_xgboost.py        # XGBoost with regularization
+│   ├── advanced_politician_features.py  # Politician signal features
+│   └── config.py               # Configuration settings
+│
+├── scripts/                    # Analysis scripts
+│   ├── validate_multiyear.py   # Main validation (8 stocks, 2 years)
+│   ├── economic_backtest.py    # Trading simulation
+│   ├── live_prediction_demo.py # Real-time predictions
+│   ├── analyze_feature_importance.py  # Feature rankings
+│   └── README.md               # Script documentation
+│
+├── data/                       # Datasets
+│   ├── archive/                # News articles (CSV)
+│   └── SentimentAnalysis/      # FinancialPhraseBank
+│
+├── results/                    # Experiment outputs (CSV)
+├── models/                     # Trained sentiment classifier
+├── visualizations/             # Charts and figures (PNG)
+├── tests/                      # Unit tests
+│
+├── README.md                   # This file
+├── QUICKSTART.md              # Quick start guide
+├── GRADER_README.md           # Grading guide
+└── requirements.txt           # Python dependencies
 ```
 
-## 🚀 Getting Started
+---
+
+## Getting Started
 
 ### Prerequisites
-
-- Python 3.8 or higher
+- Python 3.8+
 - pip package manager
 
 ### Installation
 
-1. Clone the repository:
 ```bash
+# Clone repository
 git clone <repository-url>
 cd StockPrediction
-```
 
-2. Create a virtual environment:
-```bash
+# Create virtual environment
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
-3. Install dependencies:
-```bash
+# Install dependencies
 pip install -r requirements.txt
-```
 
-4. Download NLTK data (for sentiment analysis):
-```python
+# Download NLTK data
 python -c "import nltk; nltk.download('vader_lexicon')"
 ```
 
-### Quick Start
-
-Run the baseline model notebook:
-```bash
-jupyter notebook notebooks/01_baseline_model.ipynb
-```
-
-Or use the Python scripts directly:
-
-```python
-from src import fetch_stock_data, create_features, train_model, evaluate_model
-
-# Fetch data
-stock_data = fetch_stock_data('AAPL', '2023-01-01', '2023-12-31')
-
-# Create features
-X, y, dates = create_features(stock_data)
-
-# Train model
-from sklearn.model_selection import train_test_split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
-
-model = train_model(X_train, y_train, model_type='random_forest')
-metrics = evaluate_model(model, X_test, y_test)
-```
-
-## 📚 Notebooks
-
-1. **01_baseline_model.ipynb** - Baseline model using only technical indicators
-   - Data loading and exploration
-   - Feature engineering
-   - Model training (Random Forest & Logistic Regression)
-   - Cross-validation and evaluation
-
-2. **02_sentiment_integration.ipynb** _(To be created)_
-   - News sentiment data integration
-   - Sentiment feature engineering
-   - Performance comparison
-
-3. **03_politician_signals.ipynb** _(To be created)_
-   - Politician trading data integration
-   - Signal feature engineering
-   - Performance comparison
-
-4. **04_combined_model.ipynb** _(To be created)_
-   - Full model with all features
-   - Feature importance analysis
-   - Final performance evaluation
-
-5. **05_economic_backtest.ipynb** _(To be created)_
-   - Realistic trading simulation
-   - Transaction costs and slippage
-   - Risk-adjusted returns analysis
-
-## 🔧 Configuration
-
 ### API Keys
 
-To use real news and politician trading data, you'll need API keys:
-
-1. **News API**: Sign up at [newsapi.org](https://newsapi.org/)
-2. **Finnhub**: Sign up at [finnhub.io](https://finnhub.io/)
-3. **Quiver Quantitative**: Sign up at [quiverquant.com](https://www.quiverquant.com/)
-
-Create a `.env` file in the project root:
+Create a `.env` file:
 ```
-NEWS_API_KEY=your_news_api_key
-FINNHUB_API_KEY=your_finnhub_key
-QUIVER_API_KEY=your_quiver_key
+QUIVER_API_KEY=your_key_here
+NEWS_API_KEY=your_key_here  # Optional
 ```
 
-## 📊 Data Sources
+Get keys from:
+- [Quiver Quantitative](https://www.quiverquant.com/) (politician trades)
+- [NewsAPI](https://newsapi.org/) (real-time news, optional)
 
-- **Stock Data**: [Yahoo Finance](https://finance.yahoo.com/) via `yfinance`
-- **News Sentiment**: NewsAPI, Alpha Vantage, or Finnhub
-- **Politician Trades**: Finnhub or Quiver Quantitative
+### Run Validation
 
-## 🧪 Testing
-
-Run tests:
 ```bash
-pytest tests/
+# Full multi-year validation
+python scripts/validate_multiyear.py
+
+# Economic backtest
+python scripts/economic_backtest.py
+
+# Live predictions
+python scripts/live_prediction_demo.py
 ```
-
-## 📈 Model Performance
-
-### Baseline Model (Technical Indicators Only)
-
-Metrics will be displayed after running the baseline notebook. Expected performance:
-- Accuracy: ~52-58%
-- Precision: ~53-60%
-- F1 Score: ~53-58%
-
-## 🛣️ Roadmap
-
-- [x] Project structure setup
-- [x] Technical indicator features
-- [x] Baseline model (Random Forest & Logistic Regression)
-- [ ] News sentiment integration
-- [ ] Politician trading signals
-- [ ] Combined feature model
-- [ ] Economic backtesting framework
-- [ ] Model deployment pipeline
-
-## 📝 Research Questions
-
-1. Do sentiment scores improve prediction accuracy over technical indicators alone?
-2. Do politician trades have statistically significant predictive power?
-3. What is the marginal contribution of each data source?
-4. Can the model generate positive risk-adjusted returns after transaction costs?
-
-## ⚠️ Disclaimer
-
-This project is for **educational and research purposes only**. It should not be used for actual trading without:
-- Extensive additional testing and validation
-- Professional financial advice
-- Understanding of market risks
-
-Past performance does not guarantee future results.
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🙏 Acknowledgments
-
-- Technical analysis library: [ta](https://github.com/bukosabino/ta)
-- Financial data: [yfinance](https://github.com/ranaroussi/yfinance)
-- Sentiment analysis: [NLTK VADER](https://www.nltk.org/)
-
-## 📧 Contact
-
-For questions or feedback, please open an issue on GitHub.
 
 ---
 
-**Happy Predicting! 📈**
+## Visualizations
+
+All figures are in `visualizations/`:
+
+| File | Description |
+|------|-------------|
+| `sector_performance.png` | Accuracy by sector |
+| `overfitting_analysis.png` | Train vs test gaps |
+| `economic_performance.png` | Trading simulation |
+| `feature_importance_visualization.png` | Top features |
+
+---
+
+## Results Files
+
+All results are in `results/`:
+
+| File | Description |
+|------|-------------|
+| `multiyear_validation_results.csv` | Accuracy by stock-year |
+| `economic_backtest_results.csv` | Trading performance |
+| `feature_importance_rankings.csv` | Top 25 features |
+| `overfitting_experiments.csv` | Regularization tests |
+
+---
+
+## Testing
+
+```bash
+pytest tests/ -v
+```
+
+---
+
+## Documentation
+
+- **QUICKSTART.md** - Get running in 5 minutes
+- **GRADER_README.md** - Full execution guide for grading
+- **scripts/README.md** - Script descriptions
+
+---
+
+## Research Findings
+
+### What Works
+1. **Financial sector stocks** respond well to politician signals (WFC: 70%)
+2. **Risk-adjusted returns** are strong (Sharpe 2.22)
+3. **Downside protection** during market downturns
+
+### What Doesn't
+1. **Technology stocks** show limited predictability
+2. **Overfitting** persists despite regularization (38% avg gap)
+3. **Absolute returns** often underperform buy-and-hold
+
+### Implications
+- Politician trading signals are **sector-specific**, not universal
+- Best used for **risk management** rather than return maximization
+- Supports hybrid strategies combining alternative data with fundamentals
+
+---
+
+## Disclaimer
+
+This project is for **educational and research purposes only**. It should not be used for actual trading without professional financial advice. Past performance does not guarantee future results.
+
+---
+
+## Acknowledgments
+
+- [yfinance](https://github.com/ranaroussi/yfinance) - Stock data
+- [NLTK VADER](https://www.nltk.org/) - Sentiment analysis
+- [XGBoost](https://xgboost.readthedocs.io/) - Machine learning
+- [Quiver Quantitative](https://www.quiverquant.com/) - Politician trading data
+
+---
+
+## License
+
+MIT License - See LICENSE file for details.
+
+---
+
+**Authors:** Conner Murphy and William Coleman
