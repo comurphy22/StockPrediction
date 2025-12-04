@@ -316,4 +316,4 @@ if __name__ == '__main__':
         print(f"{stock:6s} → {sector:5s} ({sector_name})")
     
     print()
-    print("✅ Market data loader test complete!")
+    print("[OK] Market data loader test complete!")

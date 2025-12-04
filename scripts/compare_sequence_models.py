@@ -51,7 +51,7 @@ print(f"Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
 
 # Check API keys
 if not check_api_keys():
-    print("\n⚠️  Please configure API keys in .env file")
+    print("\n[WARN]  Please configure API keys in .env file")
     print("   Continuing with stock data only (for testing)\n")
 
 # Configuration
@@ -113,7 +113,7 @@ for idx, ticker in enumerate(STOCKS, 1):
         
         # Check if we have enough data
         if len(X_clean) < 100:
-            print(f"      ⚠️  Insufficient data (< 100 samples), skipping...")
+            print(f"      [WARN]  Insufficient data (< 100 samples), skipping...")
             continue
         
         # Step 3: Train/Test Split
@@ -132,7 +132,7 @@ for idx, ticker in enumerate(STOCKS, 1):
         scaler = StandardScaler()
         X_train_scaled = scaler.fit_transform(X_train)
         X_test_scaled = scaler.transform(X_test)
-        print(f"      ✅ Standardized to mean=0, std=1")
+        print(f"      [OK] Standardized to mean=0, std=1")
         
         # =================================================================
         # Model 1: XGBoost (Tabular Baseline)
@@ -226,7 +226,7 @@ for idx, ticker in enumerate(STOCKS, 1):
             'GRU': gru_test_metrics['accuracy']
         }
         winner = max(test_accs, key=test_accs.get)
-        print(f"\n      🏆 Winner: {winner} ({test_accs[winner]:.2%})")
+        print(f"\n       Winner: {winner} ({test_accs[winner]:.2%})")
         
         # Store results
         result = {
@@ -259,10 +259,10 @@ for idx, ticker in enumerate(STOCKS, 1):
         results.append(result)
         
         stock_runtime = time.time() - stock_start_time
-        print(f"\n   ✅ {ticker} completed in {stock_runtime/60:.1f} minutes")
+        print(f"\n   [OK] {ticker} completed in {stock_runtime/60:.1f} minutes")
         
     except Exception as e:
-        print(f"\n   ❌ Error: {e}")
+        print(f"\n   [ERROR] Error: {e}")
         import traceback
         traceback.print_exc()
         continue
@@ -279,7 +279,7 @@ if results:
     df = pd.DataFrame(results)
     output_path = 'results/sequence_model_comparison.csv'
     df.to_csv(output_path, index=False)
-    print(f"✅ Saved results to: {output_path}")
+    print(f"[OK] Saved results to: {output_path}")
     
     # ========================================================================
     # AGGREGATE ANALYSIS
@@ -289,12 +289,12 @@ if results:
     print("AGGREGATE RESULTS ACROSS ALL STOCKS")
     print(f"{'='*80}")
     
-    print(f"\n📊 Average Performance:")
+    print(f"\n Average Performance:")
     print(f"   XGBoost:  Test={df['xgb_test_acc'].mean():.2%} (±{df['xgb_test_acc'].std():.2%})")
     print(f"   LSTM:     Test={df['lstm_test_acc'].mean():.2%} (±{df['lstm_test_acc'].std():.2%})")
     print(f"   GRU:      Test={df['gru_test_acc'].mean():.2%} (±{df['gru_test_acc'].std():.2%})")
     
-    print(f"\n📊 Average F1 Score:")
+    print(f"\n Average F1 Score:")
     print(f"   XGBoost:  {df['xgb_f1'].mean():.2%}")
     print(f"   LSTM:     {df['lstm_f1'].mean():.2%}")
     print(f"   GRU:      {df['gru_f1'].mean():.2%}")
@@ -304,7 +304,7 @@ if results:
     print(f"   LSTM:     {df['lstm_runtime'].mean():.1f}s")
     print(f"   GRU:      {df['gru_runtime'].mean():.1f}s")
     
-    print(f"\n🏆 Winner Count:")
+    print(f"\n Winner Count:")
     winner_counts = df['winner'].value_counts()
     for model, count in winner_counts.items():
         print(f"   {model}: {count}/{len(df)} stocks")
@@ -313,7 +313,7 @@ if results:
     xgb_better = (df['xgb_test_acc'] > df['lstm_test_acc']).sum()
     lstm_better = (df['lstm_test_acc'] > df['xgb_test_acc']).sum()
     
-    print(f"\n📈 XGBoost vs LSTM:")
+    print(f"\n XGBoost vs LSTM:")
     print(f"   XGBoost better: {xgb_better}/{len(df)} stocks")
     print(f"   LSTM better:    {lstm_better}/{len(df)} stocks")
     
@@ -328,7 +328,7 @@ if results:
     print(f"   GRU:      {gru_overfit:.2%}")
 
 else:
-    print("❌ No results to save")
+    print("[ERROR] No results to save")
 
 # ============================================================================
 # FINAL CONCLUSIONS

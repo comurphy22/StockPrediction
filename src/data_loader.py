@@ -34,22 +34,47 @@ def fetch_stock_data(ticker: str, start_date: str, end_date: str) -> pd.DataFram
     pd.DataFrame
         DataFrame with columns: Open, High, Low, Close, Volume, Adj Close
     """
-    try:
-        stock = yf.Ticker(ticker)
-        df = stock.history(start=start_date, end=end_date)
-        
-        if df.empty:
-            raise ValueError(f"No data found for ticker {ticker}")
-        
-        # Reset index to make Date a column
-        df = df.reset_index()
-        
-        print(f"Successfully fetched {len(df)} days of data for {ticker}")
-        return df
+    import time
     
-    except Exception as e:
-        print(f"Error fetching stock data for {ticker}: {str(e)}")
-        raise
+    # Retry logic for API issues
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            stock = yf.Ticker(ticker)
+            
+            # Add small delay to avoid rate limiting
+            if attempt > 0:
+                time.sleep(2 ** attempt)  # Exponential backoff: 2s, 4s
+            
+            # Try with period parameter as backup
+            df = stock.history(start=start_date, end=end_date)
+            
+            # If empty, try alternative method
+            if df.empty:
+                print(f"   Retry attempt {attempt + 1}/{max_retries} for {ticker}...")
+                time.sleep(1)
+                continue
+            
+            # Reset index to make Date a column
+            df = df.reset_index()
+            
+            # Verify we got data
+            if len(df) == 0:
+                if attempt < max_retries - 1:
+                    continue
+                else:
+                    raise ValueError(f"No data found for ticker {ticker}")
+            
+            return df
+        
+        except Exception as e:
+            if attempt < max_retries - 1:
+                print(f"   Attempt {attempt + 1} failed, retrying...")
+                time.sleep(2)
+                continue
+            else:
+                print(f"   Error fetching stock data for {ticker} after {max_retries} attempts: {str(e)}")
+                raise ValueError(f"No data found for ticker {ticker}")
 
 
 def fetch_politician_trades(ticker: str, api_key: str = None) -> pd.DataFrame:
@@ -465,9 +490,9 @@ def fetch_historical_news_kaggle(ticker: str, start_date: str, end_date: str,
                     csv_paths.append(str(test_path))
         
         if not csv_paths:
-            print("⚠️  News dataset not found in data/ or data/archive/ directory")
-            print("📥 Looking for: analyst_ratings_processed.csv, raw_analyst_ratings.csv, or raw_partner_headlines.csv")
-            print("📁 Expected location: /Users/tobycoleman/mining/StockPrediction/data/archive/")
+            print("[WARN]  News dataset not found in data/ or data/archive/ directory")
+            print(" Looking for: analyst_ratings_processed.csv, raw_analyst_ratings.csv, or raw_partner_headlines.csv")
+            print(" Expected location: /Users/tobycoleman/mining/StockPrediction/data/archive/")
             return pd.DataFrame()
         
         # If we have multiple files, we'll combine them
@@ -476,7 +501,7 @@ def fetch_historical_news_kaggle(ticker: str, start_date: str, end_date: str,
     try:
         # Handle both single file and multiple files
         if isinstance(csv_path, list):
-            print(f"📂 Loading {len(csv_path)} dataset file(s) and combining...")
+            print(f" Loading {len(csv_path)} dataset file(s) and combining...")
             all_dfs = []
             dataset_info = []
             
@@ -490,13 +515,13 @@ def fetch_historical_news_kaggle(ticker: str, start_date: str, end_date: str,
             
             # Combine all datasets
             df = pd.concat(all_dfs, ignore_index=True)
-            print(f"✅ Combined {len(csv_path)} datasets: {len(df):,} total rows")
+            print(f"[OK] Combined {len(csv_path)} datasets: {len(df):,} total rows")
         else:
-            print(f"📂 Loading dataset from: {csv_path}")
+            print(f" Loading dataset from: {csv_path}")
             df = pd.read_csv(csv_path)
-            print(f"📊 Dataset shape: {df.shape}")
+            print(f" Dataset shape: {df.shape}")
         
-        print(f"📋 Columns: {df.columns.tolist()}")
+        print(f" Columns: {df.columns.tolist()}")
         
         # Identify ticker and date columns (dataset may have different column names)
         ticker_col = None
@@ -513,7 +538,7 @@ def fetch_historical_news_kaggle(ticker: str, start_date: str, end_date: str,
                 headline_col = col
         
         if not all([ticker_col, date_col, headline_col]):
-            print(f"❌ Could not identify required columns")
+            print(f"[ERROR] Could not identify required columns")
             print(f"   Found: ticker={ticker_col}, date={date_col}, headline={headline_col}")
             return pd.DataFrame()
         
@@ -523,16 +548,16 @@ def fetch_historical_news_kaggle(ticker: str, start_date: str, end_date: str,
             # Prefer 'headline', fallback to 'title'
             df['unified_headline'] = df['headline'].fillna(df['title'])
             headline_col = 'unified_headline'
-            print(f"✅ Combined 'headline' and 'title' columns → '{headline_col}'")
+            print(f"[OK] Combined 'headline' and 'title' columns → '{headline_col}'")
         
-        print(f"✅ Using columns: ticker='{ticker_col}', date='{date_col}', headline='{headline_col}' from {len(df):,} total rows")
+        print(f"[OK] Using columns: ticker='{ticker_col}', date='{date_col}', headline='{headline_col}' from {len(df):,} total rows")
         
         # Filter by ticker
         df = df[df[ticker_col] == ticker].copy()
-        print(f"🎯 Found {len(df)} news items for {ticker}")
+        print(f" Found {len(df)} news items for {ticker}")
         
         if df.empty:
-            print(f"⚠️  No news found for ticker {ticker}")
+            print(f"[WARN]  No news found for ticker {ticker}")
             return pd.DataFrame()
         
         # Parse dates - use utc=True to handle timezone-aware strings uniformly
@@ -548,14 +573,14 @@ def fetch_historical_news_kaggle(ticker: str, start_date: str, end_date: str,
         end = pd.to_datetime(end_date)
         df = df[(df['date'] >= start) & (df['date'] <= end)]
         
-        print(f"📅 After date filter: {len(df)} items from {start_date} to {end_date}")
+        print(f" After date filter: {len(df)} items from {start_date} to {end_date}")
         
         if df.empty:
-            print(f"⚠️  No news in date range")
+            print(f"[WARN]  No news in date range")
             return pd.DataFrame()
         
         # Calculate sentiment for each headline
-        print("🤖 Calculating VADER sentiment scores...")
+        print(" Calculating VADER sentiment scores...")
         sentiments = []
         for headline in df[headline_col]:
             if pd.isna(headline):
@@ -595,22 +620,22 @@ def fetch_historical_news_kaggle(ticker: str, start_date: str, end_date: str,
         duplicates_removed = initial_count - len(result)
         
         if duplicates_removed > 0:
-            print(f"🔄 Removed {duplicates_removed} duplicate news items")
+            print(f" Removed {duplicates_removed} duplicate news items")
         
-        print(f"✅ Successfully processed {len(result)} unique news items")
+        print(f"[OK] Successfully processed {len(result)} unique news items")
         if len(result) > 0:
-            print(f"📊 Date range: {result['date'].min()} to {result['date'].max()}")
-            print(f"💭 Average sentiment: {result['sentiment_compound'].mean():.3f}")
+            print(f" Date range: {result['date'].min()} to {result['date'].max()}")
+            print(f" Average sentiment: {result['sentiment_compound'].mean():.3f}")
         else:
-            print("⚠️  No valid data after cleaning")
+            print("[WARN]  No valid data after cleaning")
         
         return result
         
     except FileNotFoundError:
-        print(f"❌ File not found: {csv_path}")
+        print(f"[ERROR] File not found: {csv_path}")
         return pd.DataFrame()
     except Exception as e:
-        print(f"❌ Error loading Kaggle dataset: {str(e)}")
+        print(f"[ERROR] Error loading Kaggle dataset: {str(e)}")
         import traceback
         traceback.print_exc()
         return pd.DataFrame()
@@ -653,12 +678,12 @@ def fetch_news_sentiment_hybrid(ticker: str, start_date: str, end_date: str,
     # Historical data from Kaggle (if date range includes historical period)
     if start < pd.to_datetime(cutoff):
         historical_end = min(end, pd.to_datetime(cutoff))
-        print(f"\n📚 Fetching historical news from Kaggle ({start_date} to {historical_end.date()})...")
+        print(f"\n Fetching historical news from Kaggle ({start_date} to {historical_end.date()})...")
         historical_df = fetch_historical_news_kaggle(ticker, start_date, str(historical_end.date()))
         
         if not historical_df.empty:
             all_data.append(historical_df)
-            print(f"✅ Got {len(historical_df)} historical news items")
+            print(f"[OK] Got {len(historical_df)} historical news items")
     
     # Recent data from NewsAPI (if date range includes recent period)
     if end >= pd.to_datetime(cutoff):
@@ -674,11 +699,11 @@ def fetch_news_sentiment_hybrid(ticker: str, start_date: str, end_date: str,
             if 'date' in recent_df.columns:
                 recent_df['date'] = pd.to_datetime(recent_df['date']).dt.date
             all_data.append(recent_df)
-            print(f"✅ Got {len(recent_df)} recent news items")
+            print(f"[OK] Got {len(recent_df)} recent news items")
     
     # Combine data
     if not all_data:
-        print("⚠️  No news data found from either source")
+        print("[WARN]  No news data found from either source")
         return pd.DataFrame()
     
     combined_df = pd.concat(all_data, ignore_index=True)
@@ -690,8 +715,8 @@ def fetch_news_sentiment_hybrid(ticker: str, start_date: str, end_date: str,
     # Sort by date
     combined_df = combined_df.sort_values('date').reset_index(drop=True)
     
-    print(f"\n✅ Total combined news items: {len(combined_df)}")
-    print(f"📅 Coverage: {combined_df['date'].min()} to {combined_df['date'].max()}")
+    print(f"\n[OK] Total combined news items: {len(combined_df)}")
+    print(f" Coverage: {combined_df['date'].min()} to {combined_df['date'].max()}")
     
     return combined_df
 

@@ -128,14 +128,14 @@ def check_api_keys():
         issues.append("No politician trading API key found. Set QUIVER_API_KEY or FINNHUB_API_KEY in .env")
     
     if issues:
-        print("\n⚠️  API KEY CONFIGURATION ISSUES:")
+        print("\n[WARN]  API KEY CONFIGURATION ISSUES:")
         for issue in issues:
             print(f"   - {issue}")
         print("\n   Create a .env file in the project root with your API keys.")
         print("   See .env.template for the format.\n")
         return False
     
-    print("✅ API keys configured successfully")
+    print("[OK] API keys configured successfully")
     return True
 
 def get_politician_api():

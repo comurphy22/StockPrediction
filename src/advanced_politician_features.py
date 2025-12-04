@@ -56,7 +56,7 @@ def create_advanced_politician_features(
     """
     
     if politician_df.empty:
-        print("⚠️  No politician data provided, skipping advanced features")
+        print("[WARN]  No politician data provided, skipping advanced features")
         return stock_df
     
     # Ensure stock_df has Date column or DatetimeIndex
@@ -75,7 +75,7 @@ def create_advanced_politician_features(
     else:
         raise ValueError("politician_df must have 'transaction_date' or 'date' column")
     
-    print("🏛️  Creating advanced politician features...")
+    print("  Creating advanced politician features...")
     
     # === PHASE 1: NET POSITION INDICATORS ===
     
@@ -123,7 +123,7 @@ def create_advanced_politician_features(
         (daily_trades['buy_count'] + daily_trades['sell_count'] + 1)
     )
     
-    print(f"   ✅ Net position indicators: net_trade_index, net_dollar_flow, buy_percentage")
+    print(f"   [OK] Net position indicators: net_trade_index, net_dollar_flow, buy_percentage")
     
     # === PHASE 2: TEMPORAL FEATURES ===
     
@@ -168,7 +168,7 @@ def create_advanced_politician_features(
             (daily_trades['amount_last_90d'].shift(30).fillna(1) + 0.1)
         )
     
-    print(f"   ✅ Temporal features: {len(lookback_windows)} rolling windows + momentum")
+    print(f"   [OK] Temporal features: {len(lookback_windows)} rolling windows + momentum")
     
     # Days since last trade (recency indicator)
     trade_dates = daily_trades[daily_trades['buy_count'] + daily_trades['sell_count'] > 0].index
@@ -186,7 +186,7 @@ def create_advanced_politician_features(
     # Cap at 180 days (6 months = essentially no recent activity)
     daily_trades['days_since_last_trade'] = daily_trades['days_since_last_trade'].clip(upper=180)
     
-    print(f"   ✅ Recency indicator: days_since_last_trade")
+    print(f"   [OK] Recency indicator: days_since_last_trade")
     
     # === PHASE 3: QUALITY METRICS ===
     
@@ -199,7 +199,7 @@ def create_advanced_politician_features(
         (daily_trades['buy_count'] + daily_trades['sell_count'] + 1)
     )
     
-    print(f"   ✅ Quality metrics: conviction_score")
+    print(f"   [OK] Quality metrics: conviction_score")
     
     # === MERGE WITH STOCK DATA ===
     
@@ -218,7 +218,7 @@ def create_advanced_politician_features(
     
     # Count new features
     new_features = len([col for col in result.columns if col not in stock_df.columns])
-    print(f"   ✅ Added {new_features} advanced politician features")
+    print(f"   [OK] Added {new_features} advanced politician features")
     
     return result
 

@@ -47,7 +47,7 @@ print(f"Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
 
 # Check API keys
 if not check_api_keys():
-    print("\n⚠️  Please configure API keys in .env file")
+    print("\n[WARN]  Please configure API keys in .env file")
     print("   See ENV_SETUP_INSTRUCTIONS.md for help\n")
     sys.exit(1)
 
@@ -93,13 +93,13 @@ for year_idx, year in enumerate(YEARS, 1):
             # Step 1: Fetch stock data
             print(f"   [1/7] Fetching stock data...", end=" ")
             stock_data = fetch_stock_data(ticker, f'{year}-01-01', f'{year}-12-31')
-            print(f"✅ {len(stock_data)} trading days")
+            print(f"[OK] {len(stock_data)} trading days")
             
             # Step 2: Load news sentiment
             print(f"   [2/7] Loading news sentiment...", end=" ")
             news_data = fetch_historical_news_kaggle(ticker, f'{year}-01-01', f'{year}-12-31')
             news_sentiment = aggregate_daily_sentiment(news_data)
-            print(f"✅ {len(news_data)} articles")
+            print(f"[OK] {len(news_data)} articles")
             
             # Step 3: Load politician trades
             print(f"   [3/7] Loading politician trades...", end=" ")
@@ -112,7 +112,7 @@ for year_idx, year in enumerate(YEARS, 1):
                     (pol_data['date'] >= f'{year}-01-01') & 
                     (pol_data['date'] <= f'{year}-12-31')
                 ]
-            print(f"✅ {len(pol_data)} trades")
+            print(f"[OK] {len(pol_data)} trades")
             
             # Step 4: Create features
             print(f"   [4/7] Engineering features...", end=" ")
@@ -123,18 +123,18 @@ for year_idx, year in enumerate(YEARS, 1):
                 ticker,
                 add_market_features=True
             )
-            print(f"✅ {X.shape[1]} features")
+            print(f"[OK] {X.shape[1]} features")
             
             # Step 5: Handle missing values
             print(f"   [5/7] Cleaning data...", end=" ")
             X_clean = handle_missing_values(X, strategy='drop')
             y_clean = y.loc[X_clean.index]
             dates_clean = dates.loc[X_clean.index] if dates is not None else None
-            print(f"✅ {len(X_clean)} samples")
+            print(f"[OK] {len(X_clean)} samples")
             
             # Check if we have enough data
             if len(X_clean) < 50:
-                print(f"   ⚠️  Insufficient data (< 50 samples), skipping...")
+                print(f"   [WARN]  Insufficient data (< 50 samples), skipping...")
                 continue
             
             # Step 6: Train/Test Split
@@ -146,7 +146,7 @@ for year_idx, year in enumerate(YEARS, 1):
             y_train = y_clean.iloc[:split_idx]
             y_test = y_clean.iloc[split_idx:]
             
-            print(f"✅ Train: {len(X_train)}, Test: {len(X_test)}")
+            print(f"[OK] Train: {len(X_train)}, Test: {len(X_test)}")
             
             # Step 7: Train and Evaluate
             print(f"   [7/7] Training XGBoost...", end=" ")
@@ -162,7 +162,7 @@ for year_idx, year in enumerate(YEARS, 1):
             test_acc = test_metrics['accuracy']
             overfit_gap = train_acc - test_acc
             
-            print(f"✅ Train: {train_acc:.2%}, Test: {test_acc:.2%}, Gap: {overfit_gap:.2%}")
+            print(f"[OK] Train: {train_acc:.2%}, Test: {test_acc:.2%}, Gap: {overfit_gap:.2%}")
             
             # Calculate runtime
             runtime = time.time() - stock_start_time
@@ -187,10 +187,10 @@ for year_idx, year in enumerate(YEARS, 1):
             }
             results.append(result)
             
-            print(f"   ✅ Completed in {runtime:.1f}s")
+            print(f"   [OK] Completed in {runtime:.1f}s")
             
         except Exception as e:
-            print(f"\n   ❌ Error: {e}")
+            print(f"\n   [ERROR] Error: {e}")
             import traceback
             traceback.print_exc()
             continue
@@ -213,7 +213,7 @@ if results:
     df = pd.DataFrame(results)
     output_path = 'results/multiyear_validation_results.csv'
     df.to_csv(output_path, index=False)
-    print(f"✅ Saved results to: {output_path}")
+    print(f"[OK] Saved results to: {output_path}")
     
     # ========================================================================
     # ANALYSIS BY YEAR
@@ -295,7 +295,7 @@ if results:
         print(f"      {ticker}: {avg_acc:.2%} avg (±{std:.2%})")
 
 else:
-    print("❌ No results to save")
+    print("[ERROR] No results to save")
 
 # ============================================================================
 # FINAL SUMMARY
@@ -309,18 +309,18 @@ if results:
     overall_avg = df['test_acc'].mean()
     overall_std = df['test_acc'].std()
     
-    print(f"\n📊 Overall Results:")
+    print(f"\n Overall Results:")
     print(f"   Total Experiments: {len(df)}")
     print(f"   Average Test Accuracy: {overall_avg:.2%} (±{overall_std:.2%})")
     print(f"   Best Single Result: {df['test_acc'].max():.2%} ({df.loc[df['test_acc'].idxmax(), 'ticker']} {df.loc[df['test_acc'].idxmax(), 'year']})")
     print(f"   Worst Single Result: {df['test_acc'].min():.2%} ({df.loc[df['test_acc'].idxmin(), 'ticker']} {df.loc[df['test_acc'].idxmin(), 'year']})")
 
-print(f"\n🎯 Key Insights:")
+print(f"\n Key Insights:")
 print(f"   - Model tested across 3 distinct market regimes")
 print(f"   - Performance variance indicates regime-dependent behavior")
 print(f"   - Use these results to calibrate paper's generalizability claims")
 
-print(f"\n📄 Next Steps:")
+print(f"\n Next Steps:")
 print(f"   1. Review results/multiyear_validation_results.csv")
 print(f"   2. Create visualizations (year comparison, stock consistency)")
 print(f"   3. Document in docs/MULTIYEAR_VALIDATION_RESULTS.md")

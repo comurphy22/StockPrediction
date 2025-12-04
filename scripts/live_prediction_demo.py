@@ -1,6 +1,12 @@
 """
 Live Stock Prediction Demo - Real-Time BUY/SELL Signals
 
+TIMING:
+- Run AFTER market close (e.g., 4:05 PM on Monday)
+- Uses data through today's close (Monday's close)
+- Generates predictions for TOMORROW (Tuesday)
+- Execute trades tomorrow at open (Tuesday 9:30 AM)
+
 Fetches real-time data from NewsAPI and Quiver to generate
 BUY/SELL recommendations for presentation.
 
@@ -18,10 +24,11 @@ from datetime import datetime, timedelta
 import time
 
 try:
-    from config import NEWS_API_KEY, QUIVER_API_KEY
+    from config import NEWS_API_KEY, QUIVER_API_KEY, TOP_FEATURES
 except:
     NEWS_API_KEY = None
     QUIVER_API_KEY = None
+    TOP_FEATURES = None
     
 from data_loader import (
     fetch_stock_data,
@@ -30,6 +37,9 @@ from data_loader import (
 )
 from feature_engineering import create_features, handle_missing_values
 from model_xgboost import train_xgboost_model
+
+# Use top 20 features only (better performance, less overfitting)
+SELECTED_FEATURES = TOP_FEATURES[:20] if TOP_FEATURES else None
 
 # Stocks to predict (prioritized by validation performance)
 # Tier 1: Proven performers (60-70% accuracy)
@@ -70,6 +80,11 @@ def train_model_on_historical(ticker, lookback_days=180):
     # Create features
     X, y, dates = create_features(stock_data, news_sentiment, trades_data)
     
+    # Select only top 20 features (reduces overfitting)
+    if SELECTED_FEATURES:
+        available_features = [f for f in SELECTED_FEATURES if f in X.columns]
+        X = X[available_features]
+    
     # Clean
     X_clean = handle_missing_values(X, strategy='drop')
     y_clean = y.loc[X_clean.index]
@@ -92,10 +107,10 @@ def fetch_latest_data(ticker):
     # Get recent news
     try:
         if NEWS_API_KEY:
-            print(f"   📰 Fetching news from NewsAPI...")
+            print(f"    Fetching news from NewsAPI...")
             news_data = fetch_news_sentiment(ticker, days_back=7, api_key=NEWS_API_KEY)
         else:
-            print(f"   📰 Using historical news data (NewsAPI key not configured)...")
+            print(f"    Using historical news data (NewsAPI key not configured)...")
             from data_loader import fetch_historical_news_kaggle, aggregate_daily_sentiment
             end_date = datetime.now().strftime('%Y-%m-%d')
             start_date = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
@@ -104,18 +119,18 @@ def fetch_latest_data(ticker):
         from data_loader import aggregate_daily_sentiment
         news_sentiment = aggregate_daily_sentiment(news_data)
         news_count = len(news_data)
-        print(f"   ✅ Loaded {news_count} news articles")
+        print(f"   [OK] Loaded {news_count} news articles")
     except Exception as e:
-        print(f"   ⚠️  News fetch failed: {e}")
+        print(f"   [WARN]  News fetch failed: {e}")
         news_sentiment = pd.DataFrame()
         news_count = 0
     
     # Get recent politician trades
     try:
         if QUIVER_API_KEY:
-            print(f"   🏛️  Fetching politician trades from Quiver...")
+            print(f"     Fetching politician trades from Quiver...")
         else:
-            print(f"   🏛️  Fetching politician trades (using cached data, Quiver API key not configured)...")
+            print(f"     Fetching politician trades (using cached data, Quiver API key not configured)...")
         
         trades_data = fetch_politician_trades(ticker, api_key=QUIVER_API_KEY)
         
@@ -125,13 +140,13 @@ def fetch_latest_data(ticker):
             cutoff = datetime.now() - timedelta(days=90)
             trades_data = trades_data[trades_data['Date'] >= cutoff]
         trades_count = len(trades_data)
-        print(f"   ✅ Loaded {trades_count} politician trades")
+        print(f"   [OK] Loaded {trades_count} politician trades")
     except Exception as e:
-        print(f"   ⚠️  Politician trade fetch failed: {e}")
+        print(f"   [WARN]  Politician trade fetch failed: {e}")
         trades_data = pd.DataFrame()
         trades_count = 0
     
-    print(f"   ✅ Data: {len(stock_data)} days, {news_count} news, {trades_count} trades")
+    print(f"   [OK] Data: {len(stock_data)} days, {news_count} news, {trades_count} trades")
     
     return stock_data, news_sentiment, trades_data
 
@@ -140,6 +155,11 @@ def generate_prediction(model, features_list, stock_data, news_sentiment, trades
     
     # Create features
     X, y, dates = create_features(stock_data, news_sentiment, trades_data)
+    
+    # Select only top 20 features (same as training)
+    if SELECTED_FEATURES:
+        available_features = [f for f in SELECTED_FEATURES if f in X.columns]
+        X = X[available_features]
     
     # Get latest row
     X_latest = X.iloc[[-1]]  # Last row
@@ -159,22 +179,22 @@ def generate_prediction(model, features_list, stock_data, news_sentiment, trades
 def format_recommendation(ticker, prediction, confidence, current_price, news_count, trades_count):
     """Format recommendation for presentation."""
     
-    signal = "🟢 STRONG BUY" if prediction == 1 and confidence > 0.70 else \
+    signal = "[+] STRONG BUY" if prediction == 1 and confidence > 0.70 else \
              "🟡 BUY" if prediction == 1 and confidence > 0.60 else \
-             "🔴 STRONG SELL" if prediction == 0 and confidence < 0.30 else \
+             "[-] STRONG SELL" if prediction == 0 and confidence < 0.30 else \
              "🟠 SELL" if prediction == 0 and confidence < 0.40 else \
-             "⚪ HOLD"
+             "[=] HOLD"
     
     direction = "UP ↗️" if prediction == 1 else "DOWN ↘️"
     
     # Data signals
-    news_signal = "📰 High news activity" if news_count > 10 else \
-                  "📰 Moderate news" if news_count > 3 else \
-                  "📰 Low news"
+    news_signal = " High news activity" if news_count > 10 else \
+                  " Moderate news" if news_count > 3 else \
+                  " Low news"
     
-    trades_signal = "🏛️  High political interest" if trades_count > 20 else \
-                    "🏛️  Moderate political interest" if trades_count > 5 else \
-                    "🏛️  Low political interest"
+    trades_signal = "  High political interest" if trades_count > 20 else \
+                    "  Moderate political interest" if trades_count > 5 else \
+                    "  Low political interest"
     
     return {
         'ticker': ticker,
@@ -210,7 +230,7 @@ def print_recommendation_card(rec):
 """)
 
 print("="*80)
-print("🎯 LIVE STOCK PREDICTION DEMO - REAL-TIME BUY/SELL SIGNALS")
+print(" LIVE STOCK PREDICTION DEMO - REAL-TIME BUY/SELL SIGNALS")
 print("="*80)
 print(f"Powered by: NewsAPI + Quiver Quantitative + XGBoost ML")
 print(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
@@ -219,7 +239,7 @@ print("="*80 + "\n")
 
 # Check API keys
 if not NEWS_API_KEY and not QUIVER_API_KEY:
-    print("⚠️  WARNING: No API keys configured!")
+    print("[WARN]  WARNING: No API keys configured!")
     print("   This demo will use historical data only.")
     print("   Add API keys to .env for real-time data.\n")
 
@@ -233,7 +253,7 @@ for ticker in PREDICTION_STOCKS:
     try:
         # Train model on historical data
         model, features_list = train_model_on_historical(ticker, lookback_days=180)
-        print(f"   ✅ Model trained")
+        print(f"   [OK] Model trained")
         
         # Fetch latest data
         stock_data, news_sentiment, trades_data = fetch_latest_data(ticker)
@@ -260,12 +280,12 @@ for ticker in PREDICTION_STOCKS:
         print_recommendation_card(rec)
         
     except Exception as e:
-        print(f"   ❌ Error analyzing {ticker}: {e}")
+        print(f"   [ERROR] Error analyzing {ticker}: {e}")
         continue
 
 # Summary
 print("\n" + "="*80)
-print("📊 RECOMMENDATION SUMMARY")
+print(" RECOMMENDATION SUMMARY")
 print("="*80 + "\n")
 
 if recommendations:
@@ -279,20 +299,20 @@ if recommendations:
               f"(Confidence: {rec['confidence']*100:.1f}%)")
     
     # Portfolio recommendation
-    print(f"\n\n💼 PORTFOLIO ACTION:")
+    print(f"\n\n PORTFOLIO ACTION:")
     
     strong_buys = [r for r in recommendations if "STRONG BUY" in r['signal']]
     buys = [r for r in recommendations if "BUY" in r['signal'] and "STRONG" not in r['signal']]
     
     if strong_buys:
-        print(f"   🟢 PRIORITY BUYS: {', '.join([r['ticker'] for r in strong_buys])}")
+        print(f"   [+] PRIORITY BUYS: {', '.join([r['ticker'] for r in strong_buys])}")
     if buys:
         print(f"   🟡 SECONDARY BUYS: {', '.join([r['ticker'] for r in buys])}")
     if not strong_buys and not buys:
-        print(f"   ⚪ NO STRONG BUY SIGNALS - HOLD CURRENT POSITIONS")
+        print(f"   [=] NO STRONG BUY SIGNALS - HOLD CURRENT POSITIONS")
     
     # Data quality indicator
-    print(f"\n\n📈 DATA QUALITY:")
+    print(f"\n\n DATA QUALITY:")
     avg_news = np.mean([r['news_count'] for r in recommendations])
     avg_trades = np.mean([r['trades_count'] for r in recommendations])
     
@@ -300,17 +320,17 @@ if recommendations:
     print(f"   Average Politician Trades (90 days): {avg_trades:.1f}")
     
     if avg_news > 10 and avg_trades > 15:
-        print(f"   ✅ EXCELLENT - High-quality data for all stocks")
+        print(f"   [OK] EXCELLENT - High-quality data for all stocks")
     elif avg_news > 5 and avg_trades > 8:
-        print(f"   ⚠️  GOOD - Adequate data for predictions")
+        print(f"   [WARN]  GOOD - Adequate data for predictions")
     else:
-        print(f"   ⚠️  LIMITED - Consider adding more data sources")
+        print(f"   [WARN]  LIMITED - Consider adding more data sources")
 
 print("\n" + "="*80)
 print("🎤 PRESENTATION MODE ACTIVATED")
 print("="*80)
 print("""
-💡 KEY TALKING POINTS FOR PRESENTATION:
+ KEY TALKING POINTS FOR PRESENTATION:
 
 1. REAL-TIME INTEGRATION
    - Live data from NewsAPI (financial news sentiment)
@@ -343,6 +363,6 @@ print("""
 """)
 
 print("="*80)
-print("DEMO COMPLETE - READY FOR PRESENTATION! 🎉")
+print("DEMO COMPLETE - READY FOR PRESENTATION! ")
 print("="*80)
 

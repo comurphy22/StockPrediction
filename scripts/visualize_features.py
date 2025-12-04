@@ -27,9 +27,9 @@ importance_df = pd.read_csv('feature_importance_rankings.csv')
 detailed_df = pd.read_csv('feature_importance_detailed.csv')
 selection_df = pd.read_csv('feature_selection_results.csv')
 
-print(f"      ✅ Rankings: {len(importance_df)} features")
-print(f"      ✅ Detailed: {len(detailed_df)} records")
-print(f"      ✅ Selection: {len(selection_df)} experiments")
+print(f"      [OK] Rankings: {len(importance_df)} features")
+print(f"      [OK] Detailed: {len(detailed_df)} records")
+print(f"      [OK] Selection: {len(selection_df)} experiments")
 
 # Create figure with subplots
 fig = plt.figure(figsize=(20, 12))
@@ -59,7 +59,7 @@ for i, (idx, row) in enumerate(top_25.iterrows()):
     ax1.text(row['mean_importance'], i, f" {row['mean_importance']:.4f}", 
              va='center', fontsize=7)
 
-print("      ✅ Done")
+print("      [OK] Done")
 
 # ===== PLOT 2: Category Breakdown Pie Chart =====
 print("[3/6] Creating category breakdown pie chart...")
@@ -84,7 +84,7 @@ for autotext in autotexts:
     autotext.set_fontsize(9)
 
 ax2.set_title('Feature Importance by Category', fontsize=12, fontweight='bold')
-print("      ✅ Done")
+print("      [OK] Done")
 
 # ===== PLOT 3: Cumulative Importance =====
 print("[4/6] Creating cumulative importance curve...")
@@ -112,7 +112,7 @@ ax3.annotate('21 features\n90%', xy=(21, 90), xytext=(30, 85),
             fontsize=8, ha='center',
             arrowprops=dict(arrowstyle='->', color='orange', alpha=0.7))
 
-print("      ✅ Done")
+print("      [OK] Done")
 
 # ===== PLOT 4: Feature Count vs Accuracy =====
 print("[5/6] Creating feature count vs accuracy chart...")
@@ -149,7 +149,7 @@ ax4.set_ylim(40, 105)
 # Add 60% MVP target line
 ax4.axhline(y=60, color='green', linestyle='--', alpha=0.5, label='MVP Target (60%)')
 
-print("      ✅ Done")
+print("      [OK] Done")
 
 # ===== PLOT 5: Stock-Specific Heatmap =====
 print("[6/6] Creating stock-specific feature importance heatmap...")
@@ -175,7 +175,7 @@ ax5.set_xlabel('Stock', fontsize=10)
 ax5.set_ylabel('Feature', fontsize=10)
 plt.setp(ax5.get_yticklabels(), fontsize=8)
 
-print("      ✅ Done")
+print("      [OK] Done")
 
 # ===== PLOT 6: Overfitting Gap Analysis =====
 ax6 = plt.subplot(2, 3, 6)
@@ -202,13 +202,13 @@ for i, (n, gap) in enumerate(zip(n_features_list, gaps)):
 
 ax6.legend(fontsize=8)
 
-print("      ✅ Done")
+print("      [OK] Done")
 
 # Adjust layout and save
 plt.tight_layout()
 output_file = 'feature_importance_visualization.png'
 plt.savefig(output_file, dpi=300, bbox_inches='tight')
-print(f"\n✅ Visualization saved to: {output_file}")
+print(f"\n[OK] Visualization saved to: {output_file}")
 
 # Also create a simplified version for presentations
 print("\n[BONUS] Creating simplified presentation chart...")
@@ -278,7 +278,7 @@ for i, row in selection_summary.iterrows():
 plt.tight_layout()
 simple_file = 'feature_importance_simple.png'
 plt.savefig(simple_file, dpi=300, bbox_inches='tight')
-print(f"✅ Simple visualization saved to: {simple_file}")
+print(f"[OK] Simple visualization saved to: {simple_file}")
 
 print("\n" + "="*70)
 print("VISUALIZATION COMPLETE!")
@@ -287,12 +287,12 @@ print(f"\nCreated files:")
 print(f"  1. {output_file} (comprehensive, 6 charts)")
 print(f"  2. {simple_file} (presentation-ready, 2 charts)")
 print("\nKey findings visualized:")
-print("  ✅ Top 25 features ranked by importance")
-print("  ✅ Category breakdown (Technical 69%, Sentiment 16%, Politician 14%)")
-print("  ✅ Cumulative importance curve (80% at 17 features)")
-print("  ✅ Feature count vs accuracy (25 features optimal)")
-print("  ✅ Stock-specific patterns (heatmap)")
-print("  ✅ Overfitting analysis")
+print("  [OK] Top 25 features ranked by importance")
+print("  [OK] Category breakdown (Technical 69%, Sentiment 16%, Politician 14%)")
+print("  [OK] Cumulative importance curve (80% at 17 features)")
+print("  [OK] Feature count vs accuracy (25 features optimal)")
+print("  [OK] Stock-specific patterns (heatmap)")
+print("  [OK] Overfitting analysis")
 print("="*70)
 
 plt.show()

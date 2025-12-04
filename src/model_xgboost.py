@@ -216,7 +216,7 @@ def tune_xgboost_hyperparameters(X_train, y_train,
     grid_search.fit(X_train, y_train)
     
     if verbose:
-        print(f"\n✅ Grid search complete!")
+        print(f"\n[OK] Grid search complete!")
         print(f"\nBest parameters:")
         for param, value in grid_search.best_params_.items():
             print(f"  {param}: {value}")
@@ -338,7 +338,7 @@ if __name__ == "__main__":
     y_train = y_series[:split_idx]
     y_test = y_series[split_idx:]
     
-    print(f"      ✅ Train: {len(X_train)}, Test: {len(X_test)}")
+    print(f"      [OK] Train: {len(X_train)}, Test: {len(X_test)}")
     
     # Test 1: Basic training
     print("\n[2/5] Testing basic XGBoost training...")
@@ -349,19 +349,19 @@ if __name__ == "__main__":
         learning_rate=0.1,
         verbose=True
     )
-    print("      ✅ Training successful")
+    print("      [OK] Training successful")
     
     # Test 2: Evaluation
     print("\n[3/5] Testing model evaluation...")
     metrics = evaluate_xgboost_model(model, X_test, y_test, verbose=True)
-    print("      ✅ Evaluation successful")
+    print("      [OK] Evaluation successful")
     
     # Test 3: Feature importance
     print("\n[4/5] Testing feature importance extraction...")
     importance = get_xgboost_feature_importance(model, feature_names, top_n=10)
     print("\nTop 10 Features:")
     print(importance.to_string(index=False))
-    print("      ✅ Feature importance extraction successful")
+    print("      [OK] Feature importance extraction successful")
     
     # Test 4: Hyperparameter tuning (quick test)
     print("\n[5/5] Testing hyperparameter tuning (small grid)...")
@@ -377,10 +377,10 @@ if __name__ == "__main__":
         cv=3,
         verbose=True
     )
-    print("      ✅ Hyperparameter tuning successful")
+    print("      [OK] Hyperparameter tuning successful")
     
     print("\n" + "="*70)
-    print("✅ ALL TESTS PASSED!")
+    print("[OK] ALL TESTS PASSED!")
     print("="*70)
     print("\nXGBoost module is ready for use.")
     print("Import with: from model_xgboost import train_xgboost_model")

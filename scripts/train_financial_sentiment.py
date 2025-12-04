@@ -24,7 +24,7 @@ df = pd.read_csv('data/SentimentAnalysis/all-data.csv',
                  names=['sentiment', 'text'], 
                  encoding='latin-1')
 
-print(f"✅ Loaded {len(df):,} labeled sentences")
+print(f"[OK] Loaded {len(df):,} labeled sentences")
 print()
 print("Sentiment Distribution:")
 print(df['sentiment'].value_counts())
@@ -43,7 +43,7 @@ def preprocess_text(text):
 
 print("[2/5] Preprocessing text...")
 df['text_clean'] = df['text'].apply(preprocess_text)
-print("✅ Text preprocessed")
+print("[OK] Text preprocessed")
 print()
 
 # Encode labels: positive=1, neutral=0, negative=-1
@@ -60,7 +60,7 @@ X_train, X_test, y_train, y_test = train_test_split(
     stratify=df['label']
 )
 
-print(f"✅ Train: {len(X_train)} | Test: {len(X_test)}")
+print(f"[OK] Train: {len(X_train)} | Test: {len(X_test)}")
 print()
 
 # Create TF-IDF features
@@ -77,7 +77,7 @@ vectorizer = TfidfVectorizer(
 X_train_tfidf = vectorizer.fit_transform(X_train)
 X_test_tfidf = vectorizer.transform(X_test)
 
-print(f"✅ Feature matrix shape: {X_train_tfidf.shape}")
+print(f"[OK] Feature matrix shape: {X_train_tfidf.shape}")
 print(f"   Vocabulary size: {len(vectorizer.vocabulary_):,} terms")
 print()
 
@@ -101,7 +101,7 @@ print()
 
 # Train on full training set
 classifier.fit(X_train_tfidf, y_train)
-print("✅ Model trained")
+print("[OK] Model trained")
 print()
 
 # Evaluate on test set
@@ -165,11 +165,11 @@ os.makedirs('models', exist_ok=True)
 
 with open(model_path, 'wb') as f:
     pickle.dump(classifier, f)
-print(f"✅ Saved classifier: {model_path}")
+print(f"[OK] Saved classifier: {model_path}")
 
 with open(vectorizer_path, 'wb') as f:
     pickle.dump(vectorizer, f)
-print(f"✅ Saved vectorizer: {vectorizer_path}")
+print(f"[OK] Saved vectorizer: {vectorizer_path}")
 
 print()
 print("="*70)
@@ -197,4 +197,4 @@ probs = classifier.predict_proba(headline_tfidf)[0]
 """)
 
 print()
-print("✅ Training complete!")
+print("[OK] Training complete!")

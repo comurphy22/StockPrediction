@@ -44,7 +44,7 @@ print("="*70)
 print("\n[1/7] Loading top 25 feature list...")
 rankings_df = pd.read_csv('feature_importance_rankings.csv')
 top_25_features = rankings_df.head(25)['feature'].tolist()
-print(f"      ✅ Top 25 features loaded: {top_25_features[:5]}...")
+print(f"      [OK] Top 25 features loaded: {top_25_features[:5]}...")
 
 # Test configuration
 TEST_TICKERS = ['BABA', 'QCOM', 'NVDA']
@@ -81,7 +81,7 @@ for ticker in TEST_TICKERS:
                 (politician_data['date'] <= END_DATE)
             ]
         
-        print(f"      ✅ Stock: {len(stock_data)} days")
+        print(f"      [OK] Stock: {len(stock_data)} days")
         
         # Create features
         print(f"[3/7] Creating features...")
@@ -95,7 +95,7 @@ for ticker in TEST_TICKERS:
         X = X_all[available_features]
         y = y_all
         
-        print(f"      ✅ Features: {len(available_features)}/25, Samples: {len(X)}")
+        print(f"      [OK] Features: {len(available_features)}/25, Samples: {len(X)}")
         
         # Split data
         split_idx = int(len(X) * 0.8)
@@ -104,7 +104,7 @@ for ticker in TEST_TICKERS:
         y_train = y[:split_idx]
         y_test = y[split_idx:]
         
-        print(f"      ✅ Train: {len(X_train)}, Test: {len(X_test)}")
+        print(f"      [OK] Train: {len(X_train)}, Test: {len(X_test)}")
         
         # ===== MODEL 1: Random Forest =====
         print(f"\n[4/7] Training Random Forest...")
@@ -120,7 +120,7 @@ for ticker in TEST_TICKERS:
         rf_train_metrics = evaluate_model(rf_model, X_train, y_train, verbose=False)
         rf_test_metrics = evaluate_model(rf_model, X_test, y_test, verbose=False)
         
-        print(f"      ✅ Train Acc: {rf_train_metrics['accuracy']:.4f}, "
+        print(f"      [OK] Train Acc: {rf_train_metrics['accuracy']:.4f}, "
               f"Test Acc: {rf_test_metrics['accuracy']:.4f}")
         
         # ===== MODEL 2: XGBoost =====
@@ -139,7 +139,7 @@ for ticker in TEST_TICKERS:
         xgb_train_metrics = evaluate_xgboost_model(xgb_model, X_train, y_train, verbose=False)
         xgb_test_metrics = evaluate_xgboost_model(xgb_model, X_test, y_test, verbose=False)
         
-        print(f"      ✅ Train Acc: {xgb_train_metrics['accuracy']:.4f}, "
+        print(f"      [OK] Train Acc: {xgb_train_metrics['accuracy']:.4f}, "
               f"Test Acc: {xgb_test_metrics['accuracy']:.4f}")
         
         # ===== MODEL 3: Logistic Regression =====
@@ -156,7 +156,7 @@ for ticker in TEST_TICKERS:
         lr_test_recall = recall_score(y_test, lr_test_pred, zero_division=0)
         lr_test_f1 = f1_score(y_test, lr_test_pred, zero_division=0)
         
-        print(f"      ✅ Train Acc: {lr_train_acc:.4f}, Test Acc: {lr_test_acc:.4f}")
+        print(f"      [OK] Train Acc: {lr_train_acc:.4f}, Test Acc: {lr_test_acc:.4f}")
         
         # ===== COMPARISON =====
         print(f"\n[7/7] Results for {ticker}:")
@@ -183,7 +183,7 @@ for ticker in TEST_TICKERS:
             'Logistic Regression': lr_test_acc
         }
         winner = max(test_accs, key=test_accs.get)
-        print(f"      🏆 Winner: {winner} ({test_accs[winner]:.4f})")
+        print(f"       Winner: {winner} ({test_accs[winner]:.4f})")
         
         # Store results
         all_results.append({
@@ -206,7 +206,7 @@ for ticker in TEST_TICKERS:
         })
         
     except Exception as e:
-        print(f"❌ ERROR: {str(e)}")
+        print(f"[ERROR] ERROR: {str(e)}")
         import traceback
         traceback.print_exc()
 
@@ -219,7 +219,7 @@ if all_results:
     results_df = pd.DataFrame(all_results)
     
     # Average performance
-    print("📊 AVERAGE PERFORMANCE ACROSS ALL STOCKS")
+    print(" AVERAGE PERFORMANCE ACROSS ALL STOCKS")
     print(f"{'─'*70}")
     print(f"{'Model':<25} {'Avg Train':<12} {'Avg Test':<12} {'Avg Gap':<12}")
     print(f"{'─'*70}")
@@ -243,7 +243,7 @@ if all_results:
     best_model = max(avg_test_accs, key=avg_test_accs.get)
     best_acc = avg_test_accs[best_model]
     
-    print(f"🏆 BEST MODEL: {best_model}")
+    print(f" BEST MODEL: {best_model}")
     print(f"   Average Test Accuracy: {best_acc:.4f}")
     
     # Calculate improvement vs baselines
@@ -256,7 +256,7 @@ if all_results:
     print(f"\n{'─'*70}\n")
     
     # Winner breakdown
-    print("📈 WINNER BREAKDOWN BY STOCK")
+    print(" WINNER BREAKDOWN BY STOCK")
     print(f"{'─'*70}")
     winner_counts = results_df['winner'].value_counts()
     for model, count in winner_counts.items():
@@ -264,7 +264,7 @@ if all_results:
     print(f"{'─'*70}\n")
     
     # Detailed stock-by-stock
-    print("📋 DETAILED RESULTS BY STOCK")
+    print(" DETAILED RESULTS BY STOCK")
     print(f"{'─'*70}")
     print(f"{'Stock':<8} {'Model':<25} {'Test Acc':<12} {'F1 Score':<12}")
     print(f"{'─'*70}")
@@ -282,7 +282,7 @@ if all_results:
     # Save results
     output_file = 'model_comparison_results.csv'
     results_df.to_csv(output_file, index=False)
-    print(f"✅ Results saved to: {output_file}")
+    print(f"[OK] Results saved to: {output_file}")
     
     # Recommendation
     print(f"\n{'='*70}")
@@ -301,9 +301,9 @@ if all_results:
     print()
     
     if best_acc >= 0.67:
-        print(f"  ✅ EXCEEDS MVP TARGET (60%)")
+        print(f"  [OK] EXCEEDS MVP TARGET (60%)")
     else:
-        print(f"  ⚠️  Below original target but acceptable")
+        print(f"  [WARN]  Below original target but acceptable")
     
     print(f"\n{'='*70}")
     print("NEXT STEPS")
@@ -315,6 +315,6 @@ if all_results:
     print(f"{'='*70}\n")
 
 else:
-    print("\n❌ NO RESULTS - Check errors above")
+    print("\n[ERROR] NO RESULTS - Check errors above")
 
-print("✅ Model comparison complete!")
+print("[OK] Model comparison complete!")

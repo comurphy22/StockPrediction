@@ -145,7 +145,7 @@ def create_features(df: pd.DataFrame,
                 
                 # Relative strength vs SPY
                 features_df['rel_strength_spy'] = features_df['Price_change'] - features_df['SPY_return']
-                print("      ✅ Added SPY market features")
+                print("      [OK] Added SPY market features")
             
             # Add QQQ (NASDAQ) features
             if 'QQQ' in market_data:
@@ -155,7 +155,7 @@ def create_features(df: pd.DataFrame,
                 qqq_df['QQQ_return'] = qqq_df['Close'].pct_change()
                 qqq_df = qqq_df[['Date', 'QQQ_return']]
                 features_df = features_df.merge(qqq_df, on='Date', how='left')
-                print("      ✅ Added QQQ market features")
+                print("      [OK] Added QQQ market features")
             
             # Add VIX (volatility index) features
             if '^VIX' in market_data:
@@ -166,7 +166,7 @@ def create_features(df: pd.DataFrame,
                 vix_df['VIX_change'] = vix_df['VIX'].pct_change()
                 vix_df['VIX_percentile'] = vix_df['VIX'].rolling(252, min_periods=60).rank(pct=True)
                 features_df = features_df.merge(vix_df, on='Date', how='left')
-                print("      ✅ Added VIX volatility features")
+                print("      [OK] Added VIX volatility features")
             
             # Add sector features if ticker is provided
             if ticker:
@@ -185,7 +185,7 @@ def create_features(df: pd.DataFrame,
                         
                         # Relative strength vs sector
                         features_df['rel_strength_sector'] = features_df['Price_change'] - features_df['sector_return']
-                        print(f"      ✅ Added {sector_etf} sector features")
+                        print(f"      [OK] Added {sector_etf} sector features")
                     
                     # Calculate rolling beta to market (if we have SPY)
                     if 'SPY_return' in features_df.columns:
@@ -196,10 +196,10 @@ def create_features(df: pd.DataFrame,
                         
                         # Correlation to market
                         features_df['corr_spy_60d'] = features_df['Price_change'].rolling(60).corr(features_df['SPY_return'])
-                        print("      ✅ Added beta and correlation features")
+                        print("      [OK] Added beta and correlation features")
         
         except Exception as e:
-            print(f"      ⚠️  Could not add market features: {e}")
+            print(f"      [WARN]  Could not add market features: {e}")
     
     # === MERGE SENTIMENT DATA (if provided) ===
     if sentiment_df is not None and not sentiment_df.empty:
@@ -291,11 +291,11 @@ def create_features(df: pd.DataFrame,
                     features_df = features_df.merge(adv_features, on='Date', how='left')
                 else:
                     features_df = pd.concat([features_df, adv_features], axis=1)
-                print(f"      ✅ Added {len(adv_features.columns)-1 if 'Date' in adv_features.columns else len(adv_features.columns)} advanced politician features")
+                print(f"      [OK] Added {len(adv_features.columns)-1 if 'Date' in adv_features.columns else len(adv_features.columns)} advanced politician features")
             else:
-                print("      ⚠️  No advanced features generated (insufficient data)")
+                print("      [WARN]  No advanced features generated (insufficient data)")
         except Exception as e:
-            print(f"      ⚠️  Could not create advanced features: {e}")
+            print(f"      [WARN]  Could not create advanced features: {e}")
     else:
         print("No politician trade data provided - skipping politician features")
     

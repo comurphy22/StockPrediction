@@ -52,26 +52,26 @@ for year in VALIDATION_YEARS[:2]:  # Test 2018-2019 first
             # Fetch data
             print(f"   [1/7] Fetching stock data...", end=" ", flush=True)
             stock_data = fetch_stock_data(ticker, f'{year}-01-01', f'{year}-12-31')
-            print(f"✅ {len(stock_data)} days")
+            print(f"[OK] {len(stock_data)} days")
             
             print(f"   [2/7] Loading news sentiment...", end=" ", flush=True)
             news_data = fetch_historical_news_kaggle(ticker, f'{year}-01-01', f'{year}-12-31')
             news_sentiment = aggregate_daily_sentiment(news_data)
-            print(f"✅ {len(news_data)} articles")
+            print(f"[OK] {len(news_data)} articles")
             
             print(f"   [3/7] Loading politician trades...", end=" ", flush=True)
             trades_data = fetch_politician_trades(ticker)
-            print(f"✅ {len(trades_data)} trades")
+            print(f"[OK] {len(trades_data)} trades")
             
             print(f"   [4/7] Engineering features...", end=" ", flush=True)
             X, y, dates = create_features(stock_data, news_sentiment, trades_data)
-            print(f"✅ {len(X.columns)} features created")
+            print(f"[OK] {len(X.columns)} features created")
             
             print(f"   [5/7] Selecting top 20 features...", end=" ", flush=True)
             # Select only features that exist in the dataset
             available_features = [f for f in SELECTED_FEATURES if f in X.columns]
             X = X[available_features]
-            print(f"✅ Using {len(available_features)} features")
+            print(f"[OK] Using {len(available_features)} features")
             
             print(f"   [6/7] Cleaning data...", end=" ", flush=True)
             X_clean = handle_missing_values(X, strategy='drop')
@@ -80,7 +80,7 @@ for year in VALIDATION_YEARS[:2]:  # Test 2018-2019 first
             X_clean = X_clean.reset_index(drop=True)
             y_clean = y_clean.reset_index(drop=True)
             X, y = X_clean, y_clean
-            print(f"✅ {len(X)} samples (ratio: {len(X)/len(available_features):.1f}:1)")
+            print(f"[OK] {len(X)} samples (ratio: {len(X)/len(available_features):.1f}:1)")
             
             # Split
             split_idx = int(len(X) * TRAIN_TEST_SPLIT)
@@ -111,7 +111,7 @@ for year in VALIDATION_YEARS[:2]:  # Test 2018-2019 first
             print(f"Train: {train_metrics['accuracy']:.1%}, Test: {test_metrics['accuracy']:.1%}, Gap: {gap:.1%}")
             
         except Exception as e:
-            print(f"❌ Error: {e}")
+            print(f"[ERROR] {e}")
             continue
 
 # Save and analyze results
@@ -137,5 +137,5 @@ for year in [2018, 2019]:
         avg_ratio = year_results['sample_feature_ratio'].mean()
         print(f"  {year}: {avg_test:.2%} test acc, {avg_gap:.2%} overfitting gap, {avg_ratio:.1f}:1 ratio")
 
-print(f"\n✅ Results saved to: {output_path}")
+print(f"\n[OK] Results saved to: {output_path}")
 

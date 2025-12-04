@@ -28,11 +28,11 @@ print("\n[TEST 1] Fetching stock data...")
 print("-"*70)
 try:
     stock_data = fetch_stock_data(TEST_TICKER, "2024-10-01", "2024-11-01")
-    print(f"✅ Stock data fetch: SUCCESS")
+    print(f"[OK] Stock data fetch: SUCCESS")
     print(f"   - Rows: {len(stock_data)}")
     print(f"   - Columns: {list(stock_data.columns)}")
 except Exception as e:
-    print(f"❌ Stock data fetch: FAILED")
+    print(f"[FAIL] Stock data fetch: FAILED")
     print(f"   Error: {str(e)}")
 
 # Test 2: News Sentiment
@@ -42,9 +42,9 @@ try:
     news_data = fetch_news_sentiment(TEST_TICKER, days_back=TEST_DAYS_BACK)
     
     if news_data.empty:
-        print(f"⚠️  News sentiment fetch: WARNING - No data returned")
+        print(f"[WARN] News sentiment fetch: WARNING - No data returned")
     else:
-        print(f"✅ News sentiment fetch: SUCCESS")
+        print(f"[OK] News sentiment fetch: SUCCESS")
         print(f"   - Articles: {len(news_data)}")
         print(f"   - Date range: {news_data['date'].min()} to {news_data['date'].max()}")
         print(f"   - Avg sentiment: {news_data['sentiment_compound'].mean():.3f}")
@@ -53,11 +53,11 @@ try:
         # Show sample headlines
         print(f"\n   Sample headlines:")
         for idx, row in news_data.head(3).iterrows():
-            sentiment_emoji = "😊" if row['sentiment_compound'] > 0 else "😟" if row['sentiment_compound'] < 0 else "😐"
-            print(f"   {sentiment_emoji} [{row['sentiment_compound']:+.2f}] {row['headline'][:60]}...")
+            sentiment_label = "(+)" if row['sentiment_compound'] > 0 else "(-)" if row['sentiment_compound'] < 0 else "(=)"
+            print(f"   {sentiment_label} [{row['sentiment_compound']:+.2f}] {row['headline'][:60]}...")
             
 except Exception as e:
-    print(f"❌ News sentiment fetch: FAILED")
+    print(f"[FAIL] News sentiment fetch: FAILED")
     print(f"   Error: {str(e)}")
     import traceback
     traceback.print_exc()
@@ -69,10 +69,10 @@ try:
     politician_data = fetch_politician_trades(TEST_TICKER)
     
     if politician_data.empty:
-        print(f"⚠️  Politician trades fetch: WARNING - No data returned")
+        print(f"[WARN] Politician trades fetch: WARNING - No data returned")
         print(f"   This may be normal if no recent congressional trades for {TEST_TICKER}")
     else:
-        print(f"✅ Politician trades fetch: SUCCESS")
+        print(f"[OK] Politician trades fetch: SUCCESS")
         print(f"   - Trades: {len(politician_data)}")
         print(f"   - Date range: {politician_data['date'].min().date()} to {politician_data['date'].max().date()}")
         print(f"   - Columns: {list(politician_data.columns)}")
@@ -93,7 +93,7 @@ try:
             print(f"   - {date_str} | {politician[:20]:20s} | {trans_type:10s} | ${amount:,.0f}")
             
 except Exception as e:
-    print(f"❌ Politician trades fetch: FAILED")
+    print(f"[FAIL] Politician trades fetch: FAILED")
     print(f"   Error: {str(e)}")
     import traceback
     traceback.print_exc()
@@ -102,9 +102,9 @@ except Exception as e:
 print("\n" + "="*70)
 print("TEST SUMMARY")
 print("="*70)
-print("\n✅ = Success | ⚠️  = Warning (no data) | ❌ = Failed")
-print("\nIf all tests show ✅ or ⚠️ , the API integration is working correctly!")
-print("If you see ❌, check:")
+print("\n[OK] = Success | [WARN] = Warning (no data) | [FAIL] = Failed")
+print("\nIf all tests show [OK] or [WARN], the API integration is working correctly!")
+print("If you see [FAIL], check:")
 print("  1. API keys in src/config.py are correct")
 print("  2. You have internet connection")
 print("  3. API services are not down")

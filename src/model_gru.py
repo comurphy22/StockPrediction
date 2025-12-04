@@ -199,7 +199,7 @@ def train_gru_model(X_train, y_train, X_test, y_test,
     runtime = time.time() - start_time
     
     if verbose:
-        print(f"   ✅ GRU trained in {runtime:.1f}s")
+        print(f"   [OK] GRU trained in {runtime:.1f}s")
     
     train_metrics = {'accuracy': train_acc}
     test_metrics = {
@@ -292,5 +292,5 @@ if __name__ == "__main__":
     print(f"  Test Recall:    {test_metrics['recall']:.2%}")
     print(f"  Test F1:        {test_metrics['f1']:.2%}")
     
-    print(f"\n✅ GRU implementation working correctly")
+    print(f"\n[OK] GRU implementation working correctly")
 

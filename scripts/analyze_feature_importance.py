@@ -67,16 +67,16 @@ for ticker in TEST_TICKERS:
         # Fetch data
         print(f"[1/6] Fetching stock data...")
         stock_data = fetch_stock_data(ticker, START_DATE, END_DATE)
-        print(f"      ✅ {len(stock_data)} days")
+        print(f"      [OK] {len(stock_data)} days")
         
         print(f"[2/6] Fetching news sentiment...")
         news_data = fetch_historical_news_kaggle(ticker, START_DATE, END_DATE)
         if not news_data.empty:
             sentiment_data = aggregate_daily_sentiment(news_data)
-            print(f"      ✅ {len(news_data)} news → {len(sentiment_data)} days with sentiment")
+            print(f"      [OK] {len(news_data)} news → {len(sentiment_data)} days with sentiment")
         else:
             sentiment_data = pd.DataFrame()
-            print(f"      ⚠️  No news data")
+            print(f"      [WARN]  No news data")
         
         print(f"[3/6] Fetching politician trades...")
         politician_data = fetch_politician_trades(ticker)
@@ -86,9 +86,9 @@ for ticker in TEST_TICKERS:
                 (politician_data['date'] >= START_DATE) & 
                 (politician_data['date'] <= END_DATE)
             ]
-            print(f"      ✅ {len(politician_data)} trades in range")
+            print(f"      [OK] {len(politician_data)} trades in range")
         else:
-            print(f"      ⚠️  No trades")
+            print(f"      [WARN]  No trades")
         
         # Create all features
         print(f"[4/6] Creating all features...")
@@ -97,7 +97,7 @@ for ticker in TEST_TICKERS:
         X = handle_missing_values(X, strategy='drop')
         y = y.loc[X.index]
         
-        print(f"      ✅ {X.shape[1]} features, {len(X)} samples")
+        print(f"      [OK] {X.shape[1]} features, {len(X)} samples")
         print(f"      Features: {list(X.columns)}")
         
         # Train model
@@ -111,7 +111,7 @@ for ticker in TEST_TICKERS:
             random_state=42, 
             verbose=False
         )
-        print(f"      ✅ Model trained")
+        print(f"      [OK] Model trained")
         
         # Extract feature importances
         print(f"[6/6] Extracting feature importances...")
@@ -131,7 +131,7 @@ for ticker in TEST_TICKERS:
         print(f"      {'─'*60}")
         
     except Exception as e:
-        print(f"❌ ERROR: {str(e)}")
+        print(f"[ERROR] ERROR: {str(e)}")
         import traceback
         traceback.print_exc()
 
@@ -172,7 +172,7 @@ if all_importances:
     avg_importance['category'] = avg_importance['feature'].apply(categorize_feature)
     
     # Print top 20 features
-    print("📊 TOP 20 FEATURES (by average importance)")
+    print(" TOP 20 FEATURES (by average importance)")
     print(f"{'─'*70}")
     print(f"{'Rank':<6} {'Feature':<30} {'Avg':<10} {'Std':<10} {'Category'}")
     print(f"{'─'*70}")
@@ -185,7 +185,7 @@ if all_importances:
     print(f"{'─'*70}\n")
     
     # Category breakdown
-    print("📈 IMPORTANCE BY CATEGORY")
+    print(" IMPORTANCE BY CATEGORY")
     print(f"{'─'*70}")
     category_stats = avg_importance.groupby('category').agg({
         'mean_importance': ['sum', 'mean', 'count']
@@ -196,7 +196,7 @@ if all_importances:
     print(f"{'─'*70}\n")
     
     # Recommendations
-    print("🎯 FEATURE SELECTION RECOMMENDATIONS")
+    print(" FEATURE SELECTION RECOMMENDATIONS")
     print(f"{'─'*70}")
     
     # Top features by cumulative importance
@@ -236,12 +236,12 @@ if all_importances:
     # Save results
     output_file = 'feature_importance_rankings.csv'
     avg_importance.to_csv(output_file, index=False)
-    print(f"✅ Results saved to: {output_file}")
+    print(f"[OK] Results saved to: {output_file}")
     
     # Save detailed results (per stock)
     detailed_file = 'feature_importance_detailed.csv'
     combined_df.to_csv(detailed_file, index=False)
-    print(f"✅ Detailed results saved to: {detailed_file}")
+    print(f"[OK] Detailed results saved to: {detailed_file}")
     
     print(f"\n{'='*70}")
     print("NEXT STEPS")
@@ -254,6 +254,6 @@ if all_importances:
     print(f"{'='*70}\n")
     
 else:
-    print("\n❌ NO RESULTS - Check errors above")
+    print("\n[ERROR] NO RESULTS - Check errors above")
 
-print("✅ Feature importance analysis complete!")
+print("[OK] Feature importance analysis complete!")

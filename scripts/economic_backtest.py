@@ -62,12 +62,12 @@ for stock, year in WINNER_STOCKS:
         news_data = fetch_historical_news_kaggle(stock, f'{year}-01-01', f'{year}-12-31')
         news_sentiment = aggregate_daily_sentiment(news_data)
         trades_data = fetch_politician_trades(stock)
-        print(f"   ✅ {len(stock_data)} trading days, {len(news_data)} news articles")
+        print(f"   [OK] {len(stock_data)} trading days, {len(news_data)} news articles")
         
         # Create features
         print(f"   [2/6] Engineering features...")
         X, y, dates = create_features(stock_data, news_sentiment, trades_data)
-        print(f"   ✅ {len(X.columns)} features")
+        print(f"   [OK] {len(X.columns)} features")
         
         # Clean data
         print(f"   [3/6] Cleaning data...")
@@ -96,7 +96,7 @@ for stock, year in WINNER_STOCKS:
         if len(dates_clean_normalized) > 0:
             prices = np.array([price_dict[d] for d in dates_clean_normalized])
         else:
-            print(f"   ⚠️  WARNING: No valid price data for any dates! Skipping this stock-year.")
+            print(f"   [WARN]  WARNING: No valid price data for any dates! Skipping this stock-year.")
             continue
         
         # Reset indices to avoid misalignment during train-test split
@@ -104,7 +104,7 @@ for stock, year in WINNER_STOCKS:
         y_clean = y_clean.reset_index(drop=True)
         dates_clean = dates_clean.reset_index(drop=True)
         
-        print(f"   ✅ {len(X_clean)} samples")
+        print(f"   [OK] {len(X_clean)} samples")
         
         # Split data
         split_idx = int(len(X_clean) * TRAIN_TEST_SPLIT)
@@ -116,7 +116,7 @@ for stock, year in WINNER_STOCKS:
         # Train model
         print(f"   [4/6] Training model...")
         model = train_xgboost_model(X_train, y_train, verbose=False)
-        print(f"   ✅ Model trained")
+        print(f"   [OK] Model trained")
         
         # Get predictions and probabilities
         print(f"   [5/6] Generating predictions...")
@@ -131,7 +131,7 @@ for stock, year in WINNER_STOCKS:
         actual_returns.append(0)  # Last day has no return
         actual_returns = np.array(actual_returns)
         
-        print(f"   ✅ {len(y_pred)} predictions generated")
+        print(f"   [OK] {len(y_pred)} predictions generated")
         
         # Backtest trading strategy
         print(f"   [6/6] Backtesting strategy...")
@@ -232,7 +232,7 @@ for stock, year in WINNER_STOCKS:
             'test_samples': len(y_test)
         })
         
-        print(f"\n   📊 RESULTS:")
+        print(f"\n    RESULTS:")
         print(f"      Strategy Return:  {total_return:>7.1%}")
         print(f"      Buy & Hold:       {buy_hold_return:>7.1%}")
         print(f"      Excess Return:    {(total_return - buy_hold_return):>7.1%}")
@@ -243,7 +243,7 @@ for stock, year in WINNER_STOCKS:
         print(f"      Final Value:      ${final_equity:>10,.2f}")
         
     except Exception as e:
-        print(f"   ❌ Error: {e}")
+        print(f"   [ERROR] Error: {e}")
         continue
 
 # Summary
@@ -269,14 +269,14 @@ if results:
     
     # Best performer
     best = results_df.loc[results_df['excess_return'].idxmax()]
-    print(f"\n  🏆 Best Performer: {best['stock']} {int(best['year'])}")
+    print(f"\n   Best Performer: {best['stock']} {int(best['year'])}")
     print(f"     Excess Return: {best['excess_return']:.1%}")
     print(f"     Sharpe Ratio:  {best['sharpe_ratio']:.2f}")
     
     # Save results
     output_path = 'results/economic_backtest_results.csv'
     results_df.to_csv(output_path, index=False)
-    print(f"\n✅ Results saved to: {output_path}")
+    print(f"\n[OK] Results saved to: {output_path}")
     
     # Interpretation
     print("\n" + "="*80)
@@ -285,22 +285,22 @@ if results:
     
     avg_excess = results_df['excess_return'].mean()
     if avg_excess > 0.05:
-        print("✅ PROFITABLE: Strategy significantly outperforms buy-and-hold")
+        print("[OK] PROFITABLE: Strategy significantly outperforms buy-and-hold")
         print(f"   Average excess return of {avg_excess:.1%} suggests real trading value")
     elif avg_excess > 0:
-        print("⚠️  MARGINALLY PROFITABLE: Strategy slightly beats buy-and-hold")
+        print("[WARN]  MARGINALLY PROFITABLE: Strategy slightly beats buy-and-hold")
         print(f"   Excess return of {avg_excess:.1%} may not cover all real-world costs")
     else:
-        print("❌ NOT PROFITABLE: Strategy underperforms buy-and-hold")
+        print("[ERROR] NOT PROFITABLE: Strategy underperforms buy-and-hold")
         print(f"   Negative excess return of {avg_excess:.1%}")
     
     avg_sharpe = results_df['sharpe_ratio'].mean()
     if avg_sharpe > 1.0:
-        print(f"✅ STRONG RISK-ADJUSTED RETURNS: Sharpe ratio of {avg_sharpe:.2f}")
+        print(f"[OK] STRONG RISK-ADJUSTED RETURNS: Sharpe ratio of {avg_sharpe:.2f}")
     elif avg_sharpe > 0.5:
-        print(f"⚠️  MODERATE RISK-ADJUSTED RETURNS: Sharpe ratio of {avg_sharpe:.2f}")
+        print(f"[WARN]  MODERATE RISK-ADJUSTED RETURNS: Sharpe ratio of {avg_sharpe:.2f}")
     else:
-        print(f"❌ WEAK RISK-ADJUSTED RETURNS: Sharpe ratio of {avg_sharpe:.2f}")
+        print(f"[ERROR] WEAK RISK-ADJUSTED RETURNS: Sharpe ratio of {avg_sharpe:.2f}")
 
 print("\n" + "="*80)
 print("BACKTEST COMPLETE")
