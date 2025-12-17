@@ -24,9 +24,12 @@ COPY ../src/ ./src/
 # Copy models directory
 COPY ../models/ ./models/
 
-# Expose port
+# Expose port (Railway will use $PORT)
 EXPOSE 8000
 
-# Run the server
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Set Python path for imports
+ENV PYTHONPATH=/app/src:/app
+
+# Run the server with dynamic port from Railway
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
 
