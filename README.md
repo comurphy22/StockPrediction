@@ -2,39 +2,48 @@
 
 ML system predicting stock movements using congressional trading data, news sentiment, and technical indicators.
 
-## Quick Start
+## Run the Web App
+
+### Step 1: Clone & Setup
 
 ```bash
-# Setup
 git clone https://github.com/comurphy22/StockPrediction.git
 cd StockPrediction
-python -m venv venv && source venv/bin/activate
-pip install -r requirements.txt
-
-# Run predictions
-python scripts/live_prediction_demo.py
 ```
 
-## Web App
+### Step 2: Create API Key File
+
+Create a `.env` file in the project root:
+```
+QUIVER_API_KEY=your_key_here
+```
+Get your free key at [quiverquant.com](https://www.quiverquant.com/)
+
+### Step 3: Start Backend
 
 ```bash
-# Backend (Terminal 1)
-cd backend && pip install -r requirements.txt
+python -m venv venv
+source venv/bin/activate      # Windows: venv\Scripts\activate
+pip install -r backend/requirements.txt
+python -c "import nltk; nltk.download('vader_lexicon')"
+
+cd backend
 PYTHONPATH=../src uvicorn app.main:app --port 8000
-
-# Frontend (Terminal 2)
-cd frontend && npm install && npm run dev
 ```
 
-Open **http://localhost:3000**
+### Step 4: Start Frontend (new terminal)
 
-## API Keys
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-Create `.env`:
-```
-QUIVER_API_KEY=your_key  # Required - quiverquant.com
-NEWS_API_KEY=your_key    # Optional - newsapi.org
-```
+### Step 5: Open App
+
+Go to **http://localhost:3000**
+
+---
 
 ## Results
 
