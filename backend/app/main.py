@@ -55,6 +55,7 @@ app.add_middleware(
         "http://localhost:3000",      # Next.js dev server
         "http://127.0.0.1:3000",
         "http://localhost:5173",      # Vite dev server (alternative)
+        "https://stock-prediction-roan-two.vercel.app",  # Production frontend
     ],
     allow_credentials=True,
     allow_methods=["*"],
