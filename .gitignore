@@ -15,9 +15,13 @@ build/
 .env.local
 *.local
 
-# Binary/large files
-*.pkl
+# Dynamic trained models (exclude from version control)
 models/trained/
+backend/models/trained/
+
+# Include sentiment classifier pkl files (small and required)
+# !models/financial_sentiment*.pkl
+# !backend/models/financial_sentiment*.pkl
 
 # IDE
 .idea/

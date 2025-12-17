@@ -11,9 +11,14 @@ from typing import Dict, Any, Optional, List
 import pandas as pd
 import numpy as np
 
-# Add the project src directory to path
-PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
-sys.path.insert(0, str(PROJECT_ROOT / 'src'))
+# Add the src directory to path (for Railway deployment, src is inside backend/)
+BACKEND_DIR = Path(__file__).parent.parent.parent
+PROJECT_ROOT = BACKEND_DIR.parent
+# Try local src first (Railway), then parent src (local dev)
+if (BACKEND_DIR / 'src').exists():
+    sys.path.insert(0, str(BACKEND_DIR / 'src'))
+else:
+    sys.path.insert(0, str(PROJECT_ROOT / 'src'))
 
 from app.models.schemas import BacktestResult
 
