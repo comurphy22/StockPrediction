@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground: #f0f4f8;
+  --background: #0a1929;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: 'Instrument Sans', system-ui, sans-serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #102a43;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334e68;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #486581;
+}
+
+/* Glass effect utilities */
+.glass {
+  background: rgba(16, 42, 67, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(99, 125, 152, 0.2);
+}
+
+.glass-dark {
+  background: rgba(10, 25, 41, 0.8);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(99, 125, 152, 0.15);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #34d399 0%, #06b6d4 50%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glow effects */
+.glow-profit {
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+}
+
+.glow-loss {
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+}
+
+/* Grid pattern background */
+.bg-grid {
+  background-image: 
+    linear-gradient(rgba(99, 125, 152, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 125, 152, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Staggered animation delays */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
+.stagger-6 { animation-delay: 0.6s; }
+
